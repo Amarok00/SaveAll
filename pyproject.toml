@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "saveall"
+version = "0.1.0"
+description = ""
+authors = ["Amarok00"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2.4"
+django-crispy-forms = "^2.0"
+django-cleanup = "^8.0.0"
+pillow = "^10.0.0"
+django-ckeditor = "^6.7.0"
+channels = "^4.0.0"
+django-allauth = "^0.54.0"
+python-dotenv = "^1.0.0"
+django-braces = "^1.15.0"
+crispy-bootstrap5 = "^0.7"
+django-extensions = "3.1.5"
+django-taggit = "^4.0.0"
+
+
+
+
+[tool.poetry.group.dev.dependencies]
+mkdocs = "^1.5.2"
+mkdocs-awesome-pages-plugin = "^2.9.1"
+mkdocs-material = "^9.1.21"
+django-debug-toolbar = "^4.1.0"
+ipython = "^8.14.0"
+jupyter = "^1.0.0"
+notebook = "6.4.6"
+pytest-django = "^4.5.2"
+pylint = "^2.17.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

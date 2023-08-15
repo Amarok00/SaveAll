@@ -1,0 +1,47 @@
+site_name: Save_all
+
+
+site_dir: 'wiki/GENERIC/generic/build'
+
+
+#site_url: https://example.com/
+nav:
+    - index:  index.md
+    - Dev: dev.md
+    - settings: settings.md
+    - Blog: blog/models.md
+    - Pip: blog/pip.md
+
+    
+
+#theme: readthedocs
+theme:
+    name: material
+
+
+dev_addr:
+    127.0.0.1:8200
+
+
+#markdown_extensions:
+    #- toc:
+        #permalink: True
+
+markdown_extensions:
+
+    - pymdownx.highlight
+    - pymdownx.inlinehilite
+    - pymdownx.superfences
+    - pymdownx.snippets 
+    
+
+collapse_single_pages: true
+
+plugins:
+    - search
+    - awesome-pages
+
+site_author:
+    Akimov Dmitriy
+
+
