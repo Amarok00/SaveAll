@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "ckeditor",
     "blog.apps.BlogConfig",
-    'discussions',
 ]
 
 SITE_ID = 1
