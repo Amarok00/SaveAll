@@ -1,6 +1,9 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
+    
     <head>
+        
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,12 +14,12 @@
             rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
             crossorigin="anonymous">
-
+        <link rel="stylesheet" href="{% static 'bootstrap5/assets/css/practic_styles.css' %}">
         <title>{% block title %}
             
         {% endblock %}</title>
     </head>
-    <body>
+    <body style=" background-color: black; color:white">
         {% include "templates_project/navbar.html" %}
 
         {% block content %}

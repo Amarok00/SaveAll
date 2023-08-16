@@ -11,6 +11,10 @@
                 {{blog_post_detail.title}}
             </h1>
             <p class="text-center">
+                {% if blog_post_detail.author == user %}
+                <a href="{% url 'post-delete' blog_post_detail.id %}"> Delete</a>
+                <a href="{% url 'post-update' blog_post_detail.id %}"> Update</a>
+                {% endif %}
                 <span class="by">Author:</span> <a href="#">{{blog_post_detail.author}}</a>&nbsp;&nbsp;<span
                     class="date">{{blog_post_detail.data_create|date:"F d Y"}} </span>
                 | {{blog_post_detail.content|safe }} |

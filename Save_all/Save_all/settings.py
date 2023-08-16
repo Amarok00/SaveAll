@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "ckeditor",
     "blog.apps.BlogConfig",
+    'users.apps.UsersConfig',
+    'notification',
 ]
 
 SITE_ID = 1
@@ -201,6 +203,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+LOGIN_URL = 'account_login'
+LOGIN_REDIRECT_URL = 'index-home'
 
 CKEDITOR_CONFIGS = {
     'default':{
