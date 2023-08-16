@@ -58,7 +58,7 @@ class UserPostListView(ListView):
         context = super().get_context_data(**kwargs)
         context['blog_post_user_list'] = queryset.order_by('-data_create')
         return context
-    
+
 class PostCreateView(LoginRequiredMixin,CreateView):
     model = Post 
     fields = ['title','content']
@@ -72,12 +72,18 @@ class PostCreateView(LoginRequiredMixin,CreateView):
 #     # template_name = "blog/post_detail.html"
 #     context_object_name = 'blog_post_detail'
 
-class PostDetailView(request,primary_key):
-    handel_page = get_object_or_404(Post,id=primary_key)
+def PostDetailView(request, slug, pk):
+    handle_page = get_object_or_404(Post,slug=slug ,id=pk )
+    total_comments = handle_page.comments_blog.all().filter(reply_comment=None).order_by('-id')
+    total_comments2 = handle_page.comments_blog.all().order_by('-id')
+    total_likes = handle_page.total_likes_post()
+    total_save = handle_page.total_saves_posts()
+    
 
-    context={}
 
-    context['post']=handel_page
+    context = {}
+    context['post'] = handle_page
+    return render(request, 'blog/post_detail.html', context)
 
 class PostDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
     model = Post

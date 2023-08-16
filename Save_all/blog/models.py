@@ -8,6 +8,10 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
+
+
+
+
 class Post(models.Model):
     class Meta:
         verbose_name = "Create post"
@@ -19,14 +23,13 @@ class Post(models.Model):
         db_index=True,
         verbose_name="Заголовок",
     )
-    # content = models.TextField(max_length=5000, blank=True, null=True, help_text="Maximum of 5000 characters")
     content = RichTextField(
         max_length=5000, blank=True, null=True, help_text="Maximum of 5000 characters"
     )
     data_create = models.DateTimeField(default=timezone.now)
     data_update = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    slug = models.SlugField(max_length=50)  # ,unique=True подумать
+    slug = models.SlugField(max_length=50)
     likes_post = models.ManyToManyField(
         User, related_name="post_likes", blank=True, verbose_name="likes"
     )
@@ -74,5 +77,5 @@ class Comment(models.Model):
         return  "%s - %s - %s "(self.post.title, self.name_author , self.id)
 
     def get_absolute_url(self):
-        return reverse("post-detail", kwargs={"slug": self.slug, "pk": self.pk})
+        return reverse("post-detail", kwargs={ "pk": self.pk})
     
