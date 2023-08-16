@@ -3,13 +3,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.text import slugify
+# from django.utils.text import slugify
+from pytils.translit import slugify
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-
-
-
-
 
 
 class Post(models.Model):
@@ -23,13 +20,14 @@ class Post(models.Model):
         db_index=True,
         verbose_name="Заголовок",
     )
+    # content = models.TextField(max_length=5000, blank=True, null=True, help_text="Maximum of 5000 characters")
     content = RichTextField(
         max_length=5000, blank=True, null=True, help_text="Maximum of 5000 characters"
     )
     data_create = models.DateTimeField(default=timezone.now)
     data_update = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    slug = models.SlugField(max_length=50)
+    slug = models.SlugField(max_length=50)  # ,unique=True подумать
     likes_post = models.ManyToManyField(
         User, related_name="post_likes", blank=True, verbose_name="likes"
     )
@@ -40,9 +38,9 @@ class Post(models.Model):
         verbose_name="Saved user posts",
     )
 
-    # def save(self, *args, **kwargs):
-    #     self.slug = slugify(self.title)
-    #     super(Post, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Post, self).save(*args, **kwargs)
 
     def total_likes_post(self):
         return self.likes_post.count()
@@ -57,9 +55,9 @@ class Post(models.Model):
         return self.title
 
 
-@receiver(pre_save, sender=Post)
-def prepopulated_slug(sender, instance, **kwargs):
-    instance.slug = slugify(instance.title)
+# @receiver(pre_save, sender=Post)
+# def prepopulated_slug(sender, instance, **kwargs):
+#     instance.slug = slugify(instance.title)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments_blog', on_delete=models.CASCADE)
@@ -77,5 +75,5 @@ class Comment(models.Model):
         return  "%s - %s - %s "(self.post.title, self.name_author , self.id)
 
     def get_absolute_url(self):
-        return reverse("post-detail", kwargs={ "pk": self.pk})
+        return reverse("post-detail", kwargs={"slug": self.slug, "pk": self.pk})
     
