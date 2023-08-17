@@ -46,18 +46,16 @@ class PostListView(ListView):
 class UserPostListView(ListView):
     model = Post 
     template_name = "blog/user_posts.html"
-    # context_object_name = "blog_post_user_list"
-
+    context_object_name = "blog_post_user_list"
+    paginate_by = 2
     # def get_queryset(self) -> QuerySet[Any]:
     #     user = get_object_or_404(User,username= self.kwargs.get('username'))
     #     return Post.objects.filter(author=user).order_by("-data_create")
     
-    def get_context_data(self, **kwargs):
-        user = get_object_or_404(User, username=self.kwargs.get('username'))
-        queryset = Post.objects.filter(author=user)  
-        context = super().get_context_data(**kwargs)
-        context['blog_post_user_list'] = queryset.order_by('-data_create')
-        return context
+
+    def get_queryset(self) -> QuerySet[Any]:
+        user = get_object_or_404(User,username= self.kwargs.get('username'))
+        return Post.objects.filter(author=user).order_by("-data_create")
 
 class PostCreateView(LoginRequiredMixin,CreateView):
     model = Post 

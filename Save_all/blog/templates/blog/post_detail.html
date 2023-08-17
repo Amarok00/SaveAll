@@ -7,17 +7,21 @@
 <div class="row">
     <div class="col-lg-10 col-xl-8 offset-lg-1 offset-xl-2">
         <div class="intro">
-            <h1 class="text-center" data-bss-hover-animate="pulse">&nbsp;
+            <h1 class="text-center text-danger" data-bss-hover-animate="pulse">&nbsp;
                 {{post.title}}
             </h1>
             <p class="text-center">
-                {% if post.author == user %}
-                <a href="{% url 'post-delete' post.id %}"> Delete</a>
-                <a href="{% url 'post-update' post.id %}"> Update</a>
-                {% endif %}
+                {{post.content|safe }}
                 <span class="by">Author:</span> <a href="#">{{post.author}}</a>&nbsp;&nbsp;<span
                     class="date">{{post.data_create|date:"F d Y"}} </span>
-                | {{post.content|safe }} |
+                {% if post.author == user %}
+                <br>
+                <br>
+                <a href="{% url 'post-delete' post.id %}" class="btn btn-danger">Delete</a>
+                <a href="{% url 'post-update' post.id %}"
+                    class="btn btn-primary">Update</a>
+
+                {% endif %}
             </p>
         </div>
         <div class="text">
