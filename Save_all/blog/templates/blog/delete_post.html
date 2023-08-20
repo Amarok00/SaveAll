@@ -1,0 +1,35 @@
+{% extends 'blog/base.html' %}
+
+{% block title%}Post{%endblock%}
+
+{% block content_blog %}
+
+<div class="container">
+
+    <div class="row">
+        <div class="col">
+            <br> <br>
+            <p class="text-center">
+
+                <form action method="POST">
+                    {% csrf_token %}
+
+                    <h3>Удаление. </h3><br>
+
+                    <h4>Удалить пост навсегда "{{object.title}}?" Это действие
+                        нельзя отменить. </h4>
+
+                    <button class="btn btn-danger" type="submit">Да, удалить.</button>
+
+                    <a class="btn btn-success"
+                        href="{% url 'post-detail' object.slug object.pk %}">Не удалять.</a>
+
+                </form>
+
+            </p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock%}
