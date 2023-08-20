@@ -1,6 +1,8 @@
 import random
 from typing import Any, Dict, Optional
 
+from django import forms
+
 from blog.models import Comment, Post
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -21,7 +23,7 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import CommentForm
+from .forms import CommentForm,PostCreateForm
 
 def index(request):
     context = {"posts": Post.objects.all()}
@@ -105,6 +107,20 @@ class UserPostListView(ListView):
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ["title", "content"]
+    success_url = "/world"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['image'] = forms.ImageField(label='Загрузить картинку')
+        return form
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            form.instance.image = request.FILES['image']
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def form_valid(self, form):
         form.instance.author = self.request.user

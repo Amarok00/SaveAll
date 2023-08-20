@@ -37,6 +37,7 @@ class Post(models.Model):
         blank=True,
         verbose_name="Saved user posts",
     )
+    image = models.ImageField(upload_to='Save_all/media/profiles_img/', default='Save_all/other_static/bootstrap5/assets/img/pixlr-bg.png')
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)

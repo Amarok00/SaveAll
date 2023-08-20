@@ -7,3 +7,10 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model =Comment
         fields =['body',]
+
+class PostCreateForm(forms.ModelForm):
+    image = forms.ImageField(label='Загрузить картинку')
+
+    class Meta:
+        model = Post
+        fields = ["title", "content", "image"]
