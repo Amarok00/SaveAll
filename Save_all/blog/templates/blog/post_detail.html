@@ -9,27 +9,48 @@
         <div class="intro">
             <h1 class="text-center text-danger" data-bss-hover-animate="pulse">&nbsp;
                 {{post.title}}
-            </h1>
-            <p class="text-center">
-                {{post.content|safe }}
-                <span class="by">Author:</span> <a href="#">{{post.author}}</a>&nbsp;&nbsp;<span
-                    class="date">{{post.data_create|date:"F d Y"}} </span>
-                {% if post.author == user %}
-                <br>
-                <br>
-                <a href="{% url 'post-delete' post.id %}" class="btn btn-danger">Delete</a>
-                <a href="{% url 'post-update' post.id %}"
-                    class="btn btn-primary">Update</a>
+                        <div id = "save-section" class="d-flex justify-content-end align-items-end">
+                            {% include  'blog/save_section.html'%}
+                        </div>
+                     <div class="col-xl-12"><img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
+                    <div class="d-flex"><img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
+                </h1>
+                <p class="text-center"><span class="by">Author:</span> <a
+                        href="#">{{post.author}}</a>&nbsp;&nbsp;<span
+                        class="date">{{post.data_create|date:"F d Y"}} </span></p>
 
-                {% endif %}
-            </p>
-        </div>
-        <div class="text">
-            <p>
-            </p>
-            <figure class="figure d-block"></figure>
+                        <p class="text-center">
+                            {{post.content|safe }}
+                            {% if post.author == user %}
+                    <div id="like-section">
+                        {% include "blog/like_section.html" %}
+                    </div>
+                    <br>
+                    <br>
+                    <div class="d-flex justify-content-end align-items-end ">
+                        <a href="{% url 'post-delete' post.id %}"
+                            class="btn btn-danger mx-1">
+                            <i class="bi bi-trash fs-4 "></i>
+                            <!-- Иконка корзины из Bootstrap Icons -->
+                        </a>
+
+                        <a href="{% url 'post-update' post.id %}"
+                            class="btn btn-primary ">
+                            <i class="bi bi-pencil fs-4 "></i>
+                            <!-- Иконка карандаша из Bootstrap Icons -->
+                        </a>
+
+                    </div>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="text">
+                <p>
+                </p>
+                <figure class="figure d-block"></figure>
+            </div>
         </div>
     </div>
-</div>
+<div class="main-comment-section">{% include 'blog/comments.html' %}</div>
 
-{%endblock%}
+    {%endblock%}

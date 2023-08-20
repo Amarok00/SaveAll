@@ -139,6 +139,29 @@ a.icon-link-author {
   }
 }
 .custom-button {
-  padding-left: 10px;
-  padding-right: 10px;
+
+    margin-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.centered-pag {
+  margin-left: 40%;
+  display: inline;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.save-button {
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-button i {
+  margin-right: 5px;
 }

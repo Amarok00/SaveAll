@@ -37,20 +37,20 @@
                 <hr>
                 <button class="btn btn-light " type="button"
                     style="height: 35px;background: rgb(240, 0, 60 , 0.87); "><i
-                        class="fa fa-star"></i><a href="#" class="text-light text-decoration-none">&nbsp;World</a>&nbsp;</button><button
+                        class="fa fa-star"></i><a href="/world/" class="text-light text-decoration-none">&nbsp;World</a>&nbsp;</button><button
                     class="btn btn-light " type="button"
                     style="padding: 3px 12px;margin: 12px;background: rgba(240, 0, 60, 0.87);"><i
-                        class="fa fa-user"></i><a href="#" class="text-light text-decoration-none">Logout</a></button>
+                        class="fa fa-user"></i><a href="{% url 'account_logout' %}" class="text-light text-decoration-none">Logout</a></button>
 
                 {% else %}
                 Please login or register
                 <hr>
                 <button class="btn btn-danger" type="button"
                     style="height: 35px;background: rgb(0, 0, 0);"><i
-                        class="fa fa-star"></i><a href="#"class="text-light text-decoration-none" >&nbsp;Register</a>&nbsp;</button><button
+                        class="fa fa-star"></i><a href="{% url 'account_signup' %}"class="text-light text-decoration-none" >&nbsp;Register</a>&nbsp;</button><button
                     class="btn btn-danger" type="button"
                     style="padding: 3px 12px;margin: 12px;background: rgb(0, 0, 0);"><i
-                        class="fa fa-user"></i><a href="{% url 'account_login' %}"class="text-light text-decoration-none" >Sign Up</a></button>
+                        class="fa fa-user"></i><a href="{% url 'account_login' %}"class="text-light text-decoration-none" >Sign In</a></button>
                 {% endif %}
                 <hr>
                 <header></header>

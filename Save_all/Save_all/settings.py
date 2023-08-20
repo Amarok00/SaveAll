@@ -84,6 +84,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "middleware.middleware.AjaxMiddleware",
 ]
 
 ROOT_URLCONF = "Save_all.urls"
@@ -96,9 +97,10 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
-                "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
+                
             ],
         },
     },
@@ -128,6 +130,16 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False
+ACCOUNT_USERNAME_MIN_LENGTH = 4
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_ON_GET= True
+ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 
 WSGI_APPLICATION = "Save_all.wsgi.application"
 
@@ -239,5 +251,3 @@ MESSAGE_TAGS = {
         messages.ERROR: 'alert-danger',
 }
 
-#в продакт версии убрать
-os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"

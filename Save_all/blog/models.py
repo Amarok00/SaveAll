@@ -72,7 +72,8 @@ class Comment(models.Model):
         return self.likes_comments.count()
     
     def __str__(self):
-        return  "%s - %s - %s "(self.post.title, self.name_author , self.id)
+        return "%s - %s - %s" % (self.post.title, self.name_author, self.id)
+
 
     def get_absolute_url(self):
         return reverse("post-detail", kwargs={"slug": self.slug, "pk": self.pk})

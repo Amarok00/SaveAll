@@ -10,5 +10,5 @@ class PageAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['post','name_author','data_create']
+    list_display = ['post','name_author','data_create', 'body']
     list_display_links = ['name_author','post']
