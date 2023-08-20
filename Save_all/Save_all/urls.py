@@ -23,6 +23,7 @@ from users.views import CustomLoginView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('',include('blog.urls')),
+    
     # path("register/", user_views.register, name="register"),
     # path("profile/", user_views.profile, name="profile"),
     # path(

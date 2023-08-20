@@ -27,6 +27,9 @@ def index(request):
     context = {"posts": Post.objects.all()}
     return render(request, "blog/index.html", context)
 
+def about(request):
+    return render(request, "blog/about.html")
+
 
 @login_required
 def posts_of_following_profiles(request):

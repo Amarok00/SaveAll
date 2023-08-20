@@ -14,6 +14,7 @@ from . import views
 urlpatterns = [
     path('world/', WorldPostListViewAllUser.as_view(), name='blog-world'),
     path("", views.index, name="index-home"),
+    path("about/", views.about, name="about"),
     path(
         "posts/user/<str:username>/", UserPostListView.as_view(), name="user-posts-list"
     ),
@@ -25,4 +26,5 @@ urlpatterns = [
     path("posts/<int:pk>/update/", PostUpdateView.as_view(), name="post-update"),
     # path('posts/<slug:slug>/<int:pk>/detail/',PostDetailView.as_view() , name='post-detail' ),
     path("saved-posts/", views.all_save_view_posts, name="all-save"),
+    
 ]
