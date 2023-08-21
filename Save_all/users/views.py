@@ -1,21 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.views import LoginView
-from django.shortcuts import redirect
 from .models import Profile
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
-class CustomLoginView(LoginView):
-    template_name = 'login.html'  # Replace with the name of your login template
-    success_url = '/index/'  # Replace with the desired URL after successful login
 
-    def form_valid(self, form):
-        # Perform any additional logic after successful login
-        # For example, update the user's online status
-        user = form.get_user()
-        try:
-            profile = Profile.objects.get(user=user)
-            profile.is_online = True
-            profile.save()
-        except Profile.DoesNotExist:
-            pass
-        return redirect(self.get_success_url())
-# Create your views here.
+@login_required
+def profile(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    profile = user.profile
+    if request.method == 'POST':
+        profile.bio = request.POST.get('bio', '')
+        profile.date_of_birth = request.POST.get('date_of_birth', '')
+        profile.save()
+        return redirect('profile')
+    else:
+        context = {'profile': profile}
+        return render(request, 'users/profile.html', context)

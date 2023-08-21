@@ -1,0 +1,52 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<h1>{{ profile.user.username }}'s Profile</h1>
+<button id="edit-username-btn">Edit Username</button>
+<br>
+<img src="{{ profile.image.url }}"
+    alt="{{ profile.user.username }}'s profile picture">
+<button id="edit-photo-btn">Edit Photo</button>
+<p style="padding-left: 20px;">{{ profile.bio }}</p>
+<button id="edit-bio-btn">Edit Bio</button>
+<p>{{ profile.date_of_birth|date:"d, F" }}</p>
+<button id="edit-dob-btn">Edit Date of Birth</button>
+<h2>Friends</h2>
+
+{% if profile.get_friends_count %}
+<ul>
+    {% for friend in profile.get_friends %}
+    <li>{{ friend.username }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No friends yet.</p>
+{% endif %}
+
+<button id="edit-profile-btn">Edit Profile</button>
+
+<form id="edit-profile-form" method="POST"
+    action="{% url 'profile' profile.id %}">
+    {% csrf_token %}
+    <label for="bio">Bio:</label>
+    <textarea name="bio" id="bio">{{ profile.bio }}</textarea>
+    <br>
+    <label for="date_of_birth">Date of Birth:</label>
+    <input type="date" name="date_of_birth" id="date_of_birth"
+        value="{{ profile.date_of_birth }}">
+    <br>
+    <input type="submit" value="Save">
+</form>
+
+<script>
+    document.getElementById('edit-username-btn').addEventListener('click', function() {
+    var usernameElement = document.getElementById('username');
+    var currentUsername = usernameElement.textContent;
+    var newUsername = prompt('Введите новый никнейм:', currentUsername);
+    if (newUsername === null || newUsername === '') {
+    return;
+    }
+    usernameElement.textContent = newUsername;
+});
+  </script>
+{% endblock %}
