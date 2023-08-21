@@ -11,7 +11,12 @@
       <article class="blog-card">
         <div class="blog-card__background">
           <div class="card__background--wrapper">
-                <div class="card__background--main" style="background-image: url('{{ post.image.url }}');">
+                            {% if post.image %}
+            <div class="card__background--main" style="background-image: url('{{ post.image.url }}');">
+{% else %}
+                <div class="card__background--main" style="background-image: url('bootstrap5/assets/img/pixlr-bg.png'); width: 1500; height:700 ">
+{% endif %}
+
               <div class="card__background--layer"></div>
             </div>
           </div>

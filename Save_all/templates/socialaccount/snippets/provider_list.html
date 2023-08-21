@@ -13,7 +13,12 @@
 </li>
 {% endfor %}
 {% endif %}
-<li >
-<a title="{{ provider.name }}" class="socialaccount_provider {{ provider.id }} text-danger text-decoration-none" href="{% provider_login_url provider.id process="login" %}">{{ provider.name }}</a>
-</li>
+{% if provider.name == 'GitHub' %}
+    <a href="{% provider_login_url provider.id process='login' %}" title="{{ provider.name }}" class="socialaccount_provider {{ provider.id }} text-danger text-decoration-none">
+    <i class="bi bi-github fs-3 mx-1"></i>
+</a>
+{% elif provider.name == "Google" %}
+    <a href="{% provider_login_url provider.id process='login' %}" title="{{ provider.name }}" class="socialaccount_provider {{ provider.id }} text-danger text-decoration-none">
+    <i class="bi bi-google fs-3"></i>
+{% endif %}
 {% endfor %}

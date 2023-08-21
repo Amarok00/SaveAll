@@ -1,13 +1,20 @@
 {% extends "account/base.html" %}
 {% load i18n %}
+{% load static %}
 {% load account socialaccount %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
-<div class="container">
+ <div class="col float-end d-flex justify-content-center align-items-center ">
+                <figure class="figure"><img class="img-fluid figure-img "
+                        src="{% static 'bootstrap5/assets/img/shablon.png' %}">
+                    <figcaption class="figure-caption"></figcaption>
+                </figure>
+            </div>
+<div class="container my-5">
   <div class="col-sm-6  col-sm-offset-3">
-<h1>{% trans "Sign In" %}</h1>
+<h1 class="text-danger">{% trans "Sign In" %}</h1>
 
 {% get_providers as socialaccount_providers %}
 
@@ -21,7 +28,6 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
   <ul class="socialaccount_providers">
     {% include "socialaccount/snippets/provider_list.html" with process="login" %}
   </ul>
-
   <div class="login-or">{% trans 'or' %}</div>
 
 </div>
@@ -39,9 +45,13 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-  <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
+  <button class="btn btn-danger" type="submit">{% trans "Sign In" %}</button>
+  <p></p>
+  {#<a class="  button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>#}
 </form>
+<button class="btn btn-danger "><a class="text-decoration-none text-light" href="{{ signup_url }}">Sign Up</a></button>
+<button class="btn btn-success "><a class="text-decoration-none text-danger" href="/"><<<</a></button>
 </div>
 </div>
+
 {% endblock %}
