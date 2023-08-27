@@ -1,0 +1,44 @@
+{% extends "users/base.html" %}
+{% load static %}
+
+{% block title %} {{ user_profile }} {% endblock %}
+{% block content %}
+
+<div class="container my-1">
+    <div class="profile-info">
+        <div class="avatar-container">
+            
+            <img src="{{ user.profile.image.url }}" alt="avatar" style="width: 210px; height: 300px;">
+            
+        </div>
+    </div>
+    <div class="profile-bio">
+        <div class="profile-name">
+            <span class="text-danger">Name: </span>{{ user_profile }}             
+        </div>
+        <div class="profile-age">
+            <span class="text-danger">Age: </span>{% if user_profile.age %} {{ user_profile.age }} years old {% else %} Unknown {% endif %}
+        </div>
+        <div class="profile-bio-text">
+            <span class="text-danger">Bio:</span>            
+            {% if user_profile.bio %}
+                {{ user_profile.bio }}
+            {% else %}
+                No bio
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+<input type="hidden" value="{{ user_profile.id }}" id="profile_id">
+<input type="hidden" value="1" id="post_type">
+<input type="hidden" value="{{ user_profile.user.username }}" id="profile_username">
+{% csrf_token %}
+
+{% endblock %}

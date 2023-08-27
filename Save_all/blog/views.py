@@ -13,7 +13,6 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 
-# from django.urls.base import reverse_lazy
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -23,32 +22,20 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import CommentForm,PostCreateForm
+from .forms import CommentForm, PostCreateForm
+
 
 def index(request):
     context = {"posts": Post.objects.all()}
     return render(request, "blog/index.html", context)
 
+
 def about(request):
     return render(request, "blog/about.html")
 
 
-@login_required
-def posts_of_following_profiles(request):
-    pass
-
-
-@login_required
-def LikeView(request):
-    pass
-
-
-@login_required
-def SaveView(request):
-    pass
-
 def save_post_if_ajax(request):
-    post = get_object_or_404(Post, id = request.POST.get("id"))
+    post = get_object_or_404(Post, id=request.POST.get("id"))
     saved = False
     if post.saves_posts.filter(id=request.user.id).exists():
         post.saves_posts.remove(request.user)
@@ -56,18 +43,10 @@ def save_post_if_ajax(request):
     else:
         post.saves_posts.add(request.user)
         saved = True
-    context = {
-        'post':post,
-        'total_saves':post.total_saves_posts(),
-        'saved': saved
-    }
+    context = {"post": post, "total_saves": post.total_saves_posts(), "saved": saved}
     if request.is_ajax:
-        html = render_to_string('blog/save_section.html',context,request=request)
-        return JsonResponse({'form':html})
-
-@login_required
-def LikeCommentView(request):  
-    pass
+        html = render_to_string("blog/save_section.html", context, request=request)
+        return JsonResponse({"form": html})
 
 
 class WorldPostListViewAllUser(ListView):
@@ -77,7 +56,6 @@ class WorldPostListViewAllUser(ListView):
     ordering = ["-data_create"]
     paginate_by = 3
 
-    
     def get_context_data(self, *args, **kwargs):
         context = super(WorldPostListViewAllUser, self).get_context_data()
         users = list(User.objects.exclude(pk=self.request.user.pk))
@@ -95,9 +73,6 @@ class UserPostListView(ListView):
     template_name = "blog/user_posts.html"
     context_object_name = "blog_post_user_list"
     paginate_by = 2
-    # def get_queryset(self) -> QuerySet[Any]:
-    #     user = get_object_or_404(User,username= self.kwargs.get('username'))
-    #     return Post.objects.filter(author=user).order_by("-data_create")
 
     def get_queryset(self) -> QuerySet[Any]:
         user = get_object_or_404(User, username=self.kwargs.get("username"))
@@ -111,13 +86,13 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields['image'] = forms.ImageField(label='Загрузить картинку')
+        form.fields["image"] = forms.ImageField(label="Загрузить картинку")
         return form
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            form.instance.image = request.FILES['image']
+            form.instance.image = request.FILES["image"]
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -157,23 +132,23 @@ def post_detail_view(request, slug, pk):
     else:
         comment_form = CommentForm()
 
-    liked = False  
-    if  handle_page.likes_post.filter(id=request.user.id).exists():
+    liked = False
+    if handle_page.likes_post.filter(id=request.user.id).exists():
         liked = True
-    context['total_likes'] = total_likes
-    context['liked'] = liked 
+    context["total_likes"] = total_likes
+    context["liked"] = liked
 
     saved = False
     if handle_page.saves_posts.filter(id=request.user.id).exists():
         saved = True
-    context['total_saves'] = total_saves
-    context['saved'] = saved
+    context["total_saves"] = total_saves
+    context["saved"] = saved
     context["comment_form"] = comment_form
     context["comments"] = total_comments
     context["post"] = handle_page
     if request.is_ajax:
-        html = render_to_string("blog/comments.html", context,request=request)
-        return JsonResponse({'form': html})
+        html = render_to_string("blog/comments.html", context, request=request)
+        return JsonResponse({"form": html})
     return render(request, "blog/post_detail.html", context)
 
 
@@ -203,36 +178,31 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return True
         return False
 
+
 def all_save_view_posts(request):
     user = request.user
     saved_posts = user.blog_posts_save.all()
-    context = {'saved_posts':saved_posts}
-    return render(request,'blog/saved_posts.html',context) 
+    context = {"saved_posts": saved_posts}
+    return render(request, "blog/saved_posts.html", context)
+
 
 @login_required
 def like_post(request):
-    post = get_object_or_404(Post, id=request.POST.get('id'))
+    post = get_object_or_404(Post, id=request.POST.get("id"))
     liked = False
     if post.likes_post.filter(id=request.user.id).exists():
         post.likes_post.remove(request.user)
         liked = False
-        #notify = Notification.objects.filter(post=post, sender=request.user, notification_type=1)
-        #notify.delete()
     else:
         post.likes_post.add(request.user)
         liked = True
-        #notify = Notification.objects.filter(post=post, sender=request.user, user= post.author,   notification_type=1)
-        #notify.save()
     context = {
-        'post': post,
-        'total_likes' : post.total_likes_post(),
-        'liked' : liked,
-        
+        "post": post,
+        "total_likes": post.total_likes_post(),
+        "liked": liked,
     }
-    
+
     if request.is_ajax:
-        html = render_to_string('blog/like_section.html',
-                                context,
-                                request=request)
-                                
-    return JsonResponse({'form': html})
+        html = render_to_string("blog/like_section.html", context, request=request)
+
+    return JsonResponse({"form": html})

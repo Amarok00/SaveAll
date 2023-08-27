@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-# from django.utils.text import slugify
 from pytils.translit import slugify
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from users.models import Profile
 
 
 class Post(models.Model):
@@ -38,6 +38,7 @@ class Post(models.Model):
         verbose_name="Saved user posts",
     )
     image = models.ImageField(upload_to='Save_all/media/profiles_img/', default='Save_all/other_static/bootstrap5/assets/img/pixlr-bg.png')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts',null=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
@@ -56,9 +57,6 @@ class Post(models.Model):
         return self.title
 
 
-# @receiver(pre_save, sender=Post)
-# def prepopulated_slug(sender, instance, **kwargs):
-#     instance.slug = slugify(instance.title)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments_blog', on_delete=models.CASCADE)
