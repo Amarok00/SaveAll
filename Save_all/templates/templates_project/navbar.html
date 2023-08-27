@@ -30,7 +30,7 @@
             </ul></div></div>
             {% if user.is_authenticated %}
 
-                    <a href="user/profile" class="text text-decoration-none text-danger">{% user_display user %}</a>
+                    <a href="/profile" class="text text-decoration-none text-danger">{% user_display user %}</a>
                     <a class="btn btn-light action-button mx-2" role="button"
                     href="{% url 'account_logout' %}"
                     style="color: rgba(248, 4, 4, 0.9);background: var(--bs-gray-200);border-radius: 10px;border-style: solid;border-color: rgba(0,0,0,0.9);font-size: 16px;padding: 5px 8px;">Logout</a></p>

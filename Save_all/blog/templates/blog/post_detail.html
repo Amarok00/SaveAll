@@ -21,9 +21,9 @@
 
                         <p class="text-center">
                             {{post.content|safe }}
-                            {% if post.author == user %}
-                    <div id="like-section">
+                            <div id="like-section">
                         {% include "blog/like_section.html" %}
+                        {% if post.author == user %}
                     </div>
                     <br>
                     <br>

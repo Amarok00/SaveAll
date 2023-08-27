@@ -43,9 +43,6 @@ class Profile(models.Model):
     def get_friends_count(self):
         return self.friends.all().count()
     
-    def get_absolute_url(self):
-        return reverse('profile', args=[self.user.username], prefix='/user/')
-
     def __str__(self) -> str:
         return f"{self.user.username} Profile"
 
