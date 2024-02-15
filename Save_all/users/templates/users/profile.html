@@ -5,10 +5,20 @@
 {% block content %}
 
 <div class="container my-1">
+    <div class="profile-online">
+        {% if user_profile.online %}
+        Online<span class="online-circle" title="Online"></span>
+        {% elif user_profile.last_seen %}
+        Last seen {{ user_profile.last_seen|timesince }} ago
+        {% else %}
+        Offline
+        {% endif %}
+    </div>
     <div class="profile-info">
         <div class="avatar-container">
-            <img src="{{ user.profile.image.url }}" alt="avatar" style="width: 210px; height: 300px;">
-            
+            <img src="{{ user.profile.image.url }}" alt="avatar"
+                style="width: 210px; height: 300px;">
+
         </div>
 
     </div>
@@ -20,28 +30,29 @@
             <span class="text-danger">Name: </span>{{ user.username }}
         </div>
         <div class="text-light"">
-            <span class="text-danger">First name: </span>{{ user.profile.first_name  }}
+            <span class="text-danger">First name: </span>{{
+            user.profile.first_name }}
         </div>
         <div class="text-light">
-            <span class="text-danger">Last name: </span>{{ user.profile.last_name }}
+            <span class="text-danger">Last name: </span>{{
+            user.profile.last_name }}
         </div>
         <div class="text-light">
-            <span class="text-danger">Age: </span>{% if user.profile.age %}  {{ user.profile.age }} years old {% else %} Unknown {% endif %}
+            <span class="text-danger">Age: </span>{% if user.profile.age %} {{
+            user.profile.age }} years old {% else %} Unknown {% endif %}
         </div>
         <div class="text-light">
-            <span class="text-danger">Bio:</span>            
+            <span class="text-danger">Bio:</span>
             {% if user.profile.bio %}
-                {{ user.profile.bio }}
+            {{ user.profile.bio }}
             {% else %}
-                No bio
+            No bio
             {% endif %}
         </div>
     </div>
 </div>
 
-
 <input type="hidden" value="{{ user.profile.id }}" id="profile_id">
 <input type="hidden" value="1" id="post_type">
-
 
 {% endblock %}

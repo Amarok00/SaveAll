@@ -17,10 +17,10 @@ from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 
 # Loading ENV
-env_path = Path('Save_all/') / '.env'
+env_path = Path("Save_all/") / ".env"
 
 
-#env_path = '.test.env'
+# env_path = '.test.env'
 load_dotenv(dotenv_path=env_path)
 
 
@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = "django-insecure-kmi==l(7vl8665z#odm381&r-)bd#f(xu5ca4!pm&^!g&-)a)d"
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -53,24 +53,24 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'django.contrib.sites',
+    "django.contrib.sites",
     "django.contrib.staticfiles",
     # "channels"
-    'django.contrib.humanize',
-    'django_extensions',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.github',
+    "django.contrib.humanize",
+    "django_extensions",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
     "django_cleanup.apps.CleanupConfig",
     "crispy_forms",
     "crispy_bootstrap5",
     "debug_toolbar",
     "ckeditor",
     "blog.apps.BlogConfig",
-    'users.apps.UsersConfig',
-    'notification',
+    "users.apps.UsersConfig",
+    "notification",
 ]
 
 SITE_ID = 1
@@ -85,14 +85,19 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "middleware.middleware.AjaxMiddleware",
+    "users.middleware.ActiveUserMiddleware",
 ]
+
+USER_ONLINE_TIMEOUT = 300
+
+USER_LAST_SEEN_TIMEOUT = 60 * 60 * 24 * 7
 
 ROOT_URLCONF = "Save_all.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR,'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -100,47 +105,46 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.request",
-                
             ],
         },
     },
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
         ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
     },
-    'github': {
-        'SCOPE': [
-            'user',
-            'repo',
-            'read:org',
+    "github": {
+        "SCOPE": [
+            "user",
+            "repo",
+            "read:org",
         ],
-    }
+    },
 }
 
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_EMAIL_CONFIRMATION_HMAC = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False
 ACCOUNT_USERNAME_MIN_LENGTH = 4
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_ON_GET= True
-ACCOUNT_LOGOUT_REDIRECT_URL ='/'
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 WSGI_APPLICATION = "Save_all.wsgi.application"
 
@@ -195,7 +199,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,"other_static"),
+    os.path.join(BASE_DIR, "other_static"),
 ]
 
 MEDIA_URL = "/media/"
@@ -217,12 +221,12 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-LOGIN_URL = 'account_login'
-LOGIN_REDIRECT_URL = 'index-home'
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "index-home"
 
 CKEDITOR_CONFIGS = {
-    'default':{
-        'width':'auto',
+    "default": {
+        "width": "auto",
     }
 }
 
@@ -239,16 +243,15 @@ CKEDITOR_CONFIGS = {
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_PORT = os.getenv("EMAIL_PORT")
 # EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = os.getenv('EMAIL_USER')     
-# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS') 
+# EMAIL_HOST_USER = os.getenv('EMAIL_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
 
 GOOGLE_RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY")
 
 MESSAGE_TAGS = {
-        messages.DEBUG: 'alert-secondary',
-        messages.INFO: 'alert-info',
-        messages.SUCCESS: 'alert-success',
-        messages.WARNING: 'alert-warning',
-        messages.ERROR: 'alert-danger',
+    messages.DEBUG: "alert-secondary",
+    messages.INFO: "alert-info",
+    messages.SUCCESS: "alert-success",
+    messages.WARNING: "alert-warning",
+    messages.ERROR: "alert-danger",
 }
-

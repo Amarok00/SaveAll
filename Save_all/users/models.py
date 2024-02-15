@@ -1,11 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date,datetime
+from datetime import date, datetime
+from django.utils import timezone
 
 from django.urls import reverse
 
+from Save_all import settings
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    last_seen = models.DateTimeField(null=True, blank=True)
     is_online = models.BooleanField(default=False)
     following = models.ManyToManyField(User, related_name="following", blank=True)
     friends = models.ManyToManyField(User, related_name="my_friends", blank=True)
@@ -22,15 +27,12 @@ class Profile(models.Model):
 
     def age(self):
         if self.date_of_birth:
-            date_of_birth = datetime.strptime(self.date_of_birth, '%d.%m.%Y').date()
+            date_of_birth = datetime.strptime(self.date_of_birth, "%d.%m.%Y").date()
             today = date.today()
             return (
                 today.year
                 - date_of_birth.year
-                - (
-                    (today.month, today.day)
-                    < (date_of_birth.month, date_of_birth.day)
-                )
+                - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
             )
         return None
 
@@ -42,7 +44,23 @@ class Profile(models.Model):
 
     def get_friends_count(self):
         return self.friends.all().count()
-    
+
+    @property
+    def online(self):
+        """Returns True if the user was seen in the last 5 minutes"""
+        if self.last_seen:
+            now = timezone.now()
+            last_seen = self.last_seen.astimezone(timezone.get_current_timezone())
+
+            if now > last_seen + timezone.timedelta(
+                seconds=settings.USER_ONLINE_TIMEOUT
+            ):
+                return False
+            else:
+                return True
+        else:
+            return False
+
     def __str__(self) -> str:
         return f"{self.user.username} Profile"
 
