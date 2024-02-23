@@ -1,0 +1,102 @@
+{% extends "communities/base.html" %}
+{% load static %}
+{% block title %} {% if community %} Edit: {{ community.name }} {% else %}
+Create community {% endif %} {% endblock %}
+{% block content %}
+<div class="community-container">
+    <div class="community-header">
+        <div class="bg-logo-container">
+            <div class="community-background">
+                {% if community %}
+                <img src="{{ community.bg_image_url }}"
+                    alt="{{ community.name }}">
+                {% else %}
+                <img src="{% static 'images/default-bg.jpg' %}"
+                    alt="Community Header Background">
+                {% endif %}
+            </div>
+            <div class="community-logo">
+                {% if community %}
+                <img src="{{ community.logo_url }}" alt="{{ community.name }}">
+                {% else %}
+                <img src="{% static 'images/default-logo.png' %}"
+                    alt="Community Logo">
+                {% endif %}
+            </div>
+            <div class="community-info">
+                <h2>Name</h2>
+                <p>Description</p>
+            </div>
+        </div>
+    </div>
+    <div class="community-form">
+        <form method="post" enctype="multipart/form-data"
+            class="create-community-form">
+            {% csrf_token %}
+            {% for field in form %}
+            {% if field.is_hidden %}
+            {{ field }}
+            {% else %}
+            {{ field.label_tag }}
+            {{ field }}
+            {% endif %}
+            {% endfor %}
+            <button type="submit" class="create-community-button">Save
+                community</button>
+        </form>
+    </div>
+    {% if community %}
+    {% if community.creator == request.user %}
+    <div class="community-creator-options">
+        <button class="delete-community-button">
+            Delete community <i class="fas fa-trash-alt"></i>
+        </button>
+        <div class="community-creator-options-dropdown hidden">
+            <p>Are you sure you want to permanently delete community</p>
+            <div class="community-creator-options-dropdown-name">{{
+                community.name }}?</div>
+            <div class="community-final-deletion">
+                <a class="delete-confirm"
+                    href="{% url 'delete_community' community.slug %}">Yes,
+                    delete</a>
+                <a class="delete-cancel" href="javascript:void(0);">No,
+                    cancel</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+
+<script>
+    $(document).ready(function() {
+        if($('#id_name').val()) {
+            $('.community-info h2').text($('#id_name').val());
+        }
+        if($('#id_description').val()) {
+            $('.community-info p').text($('#id_description').val());
+        }
+        $('#id_name').on('keyup', (e) => {
+            $('.community-info h2').text($('#id_name').val());
+        });
+        $('#id_description').on('keyup', (e) => {
+            $('.community-info p').text($('#id_description').val());
+        });
+        $('#id_logo').on('change', (e) => {
+            $('.community-logo img').attr('src', URL.createObjectURL(e.target.files[0]));
+        });
+        $('#id_bg_image').on('change', (e) => {
+            $('.community-background img').attr('src', URL.createObjectURL(e.target.files[0]));
+        });
+        $('.delete-community-button').on('click', (e) => {
+            $('.community-creator-options-dropdown').toggleClass('hidden');
+            $('html, body').animate({
+                scrollTop: $(document).height()
+            }, 'slow');
+        });
+        $('.delete-cancel').on('click', (e) => {
+            $('.community-creator-options-dropdown').addClass('hidden');
+        });
+    })
+</script>
+{% endblock %}
