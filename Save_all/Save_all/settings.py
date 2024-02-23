@@ -15,6 +15,12 @@ import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
+import dj_database_url
+import django_heroku
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Loading ENV
 env_path = Path("Save_all/") / ".env"
@@ -40,6 +46,8 @@ DEBUG = True
 
 INTERNAL_IPS = [
     "127.0.0.1",
+    "0.0.0.0",
+    "localhost"
 ]
 
 ALLOWED_HOSTS = ["*"]
@@ -54,8 +62,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.sites",
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
-    # "channels"
+    "channels",
     "django.contrib.humanize",
     "django_extensions",
     "allauth",
@@ -70,7 +79,11 @@ INSTALLED_APPS = [
     "ckeditor",
     "blog.apps.BlogConfig",
     "users.apps.UsersConfig",
-    "notification",
+    "notifications.apps.NotificationConfig",
+    "friends.apps.FriendsConfig",
+    "chats.apps.ChatsConfig",
+    "communities.apps.CommunitiesConfig",
+    "feed.apps.FeedConfig",
 ]
 
 SITE_ID = 1
@@ -86,6 +99,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "middleware.middleware.AjaxMiddleware",
     "users.middleware.ActiveUserMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 USER_ONLINE_TIMEOUT = 300
@@ -158,7 +172,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
+# db_from_env = dj_database_url.config()
+# DATABASES["default"].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -196,6 +211,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
@@ -231,20 +249,67 @@ CKEDITOR_CONFIGS = {
 }
 
 
-# ASGI_APPLICATION = "Save_all.routing.application"
+ASGI_APPLICATION = "Save_all.routing.application"
+ASGI_THREADS = 100
 
-# CHANNEL_LAYERS = {
-#     "default":{
-#         "BACKEND":"channels.layers.InMemoryChannelLayer"
-#     },
-# }
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
+CHANNEL_LAYERS = {
+    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+}
+
+
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
 # EMAIL_PORT = os.getenv("EMAIL_PORT")
 # EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = os.getenv('EMAIL_USER')
-# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
+# EMAIL_HOST_USER = os.getenv("EMAIL_USER")
+# EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "127.0.0.1:11211",
+    }
+}
+
+# if "DEVELOPMENT" in os.environ:
+#     print("Development environment")
+#     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         },
+#     }
+#     CHANNEL_LAYERS = {
+#         "default": {
+#             "BACKEND": "channels_redis.core.RedisChannelLayer",
+#             "CONFIG": {
+#                 "hosts": [("127.0.0.1", 6379)],
+#                 # "capacity": 200,
+#             },
+#         },
+#     }
+# else:
+#     print("Production environment")
+#     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#     EMAIL_USE_TLS = True
+#     EMAIL_PORT = 587
+#     EMAIL_HOST = "smtp.gmail.com"
+#     EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+#     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+#     DEFAULT_FROM_EMAIL = "django.social.network@example.com"
+#     DATABASES = {
+#         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+#     }
+#     CHANNEL_LAYERS = {
+#         "default": {
+#             "BACKEND": "channels_redis.core.RedisChannelLayer",
+#             "CONFIG": {
+#                 "hosts": [(os.environ.get("REDIS_URL"))],
+#             },
+#         },
+#     }
+#     django_heroku.settings(locals())
 
 GOOGLE_RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY")
 

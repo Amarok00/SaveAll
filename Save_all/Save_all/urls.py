@@ -14,18 +14,25 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from chats.routing import websocket_urlpatterns
 
 urlpatterns = [
+    path("friends/", include("friends.urls", namespace="friends")),
+    path("feed/", include("feed.urls")),
+    path("my_messages/", include("chats.urls")),
+    path("communities/", include("communities.urls")),
     path("admin/", admin.site.urls),
-    path("",include('blog.urls')),
-    path("",include('users.urls')),
     path("accounts/", include("allauth.urls")),
+    path("", include("blog.urls")),
+    path("", include("users.urls")),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))
