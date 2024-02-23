@@ -1,47 +1,47 @@
-{% load  account socialaccount %}
+{% load account socialaccount %}
 
 
-<nav
-    class="navbar navbar-light navbar-expand-md navbar-fixed-top navigation-clean-button"
+<nav class="navbar navbar-light navbar-expand-md navbar-fixed-top navigation-clean-button"
     style="background: rgb(34, 34, 34);border-radius: 20;border-top-left-radius: 20;border-top-right-radius: 20;border-bottom-right-radius: 20;border-bottom-left-radius: 20;border-style: none;padding-top: 0;padding-bottom: 10px;">
-    <div class="container"><button data-bs-toggle="collapse"
-            class="navbar-toggler" data-bs-target="#navcol-1"><span
-                class="visually-hidden">Toggle navigation</span><span
-                class="navbar-toggler-icon"></span></button>
+    <div class="container"><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span
+                class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
         <div><a class="navbar-brand" href="/"><span class="text-danger">Save All </span> </a></div>
-        <div class="collapse navbar-collapse" id="navcol-1"
-            style="color: rgb(255,255,255);">
+        <div class="collapse navbar-collapse" id="navcol-1" style="color: rgb(255,255,255);">
             <ul class="navbar-nav nav-right">
-                <li class="nav-item dropdown"><a
-                        class="dropdown-toggle nav-link" aria-expanded="false"
-                        data-bs-toggle="dropdown" href="#"
-                        style="color: rgba(224,217,217,0.9);">Посты</a>
+                <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false"
+                        data-bs-toggle="dropdown" href="#" style="color: rgba(224,217,217,0.9);">Посты</a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="{% url 'post-create' %}">Создать пост</a>
                         <a class="dropdown-item" href="/world/">Все посты</a>
-                        <a class="dropdown-item"
-                            href="{% url 'user-posts-list' user %}">Мои посты</a>                        
-                            <a class="dropdown-item"
-                            href="/saved-posts/">Сохранённые</a></div>
+                        <a class="dropdown-item" href="{% url 'user-posts-list' user %}">Мои посты</a>
+                        <a class="dropdown-item" href="/saved-posts/">Сохранённые</a>
+                    </div>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="/about/"
-                        style="color: rgba(224,217,217,0.9);">О нас </a></li>
+                <li class="nav-item"><a class="nav-link" style="color: rgba(224,217,217,0.9);"
+                        href="/friends/my-friends/">Мои друзья</a> </li>
+                <li class="nav-item"><a class="nav-link" href="/about/" style="color: rgba(224,217,217,0.9);">О нас </a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="/my_messages/"
+                        style="color: rgba(224,217,217,0.9);">Сообщения </a></li>
 
-            </ul></div></div>
-            {% if user.is_authenticated %}
+            </ul>
+        </div>
+    </div>
+    {% if user.is_authenticated %}
 
-                    <a href="/profile" class="text text-decoration-none text-danger">{% user_display user %}</a>
-                    <a class="btn btn-light action-button mx-2" role="button"
-                    href="{% url 'account_logout' %}"
-                    style="color: rgba(248, 4, 4, 0.9);background: var(--bs-gray-200);border-radius: 10px;border-style: solid;border-color: rgba(0,0,0,0.9);font-size: 16px;padding: 5px 8px;">Logout</a></p>
-            {% else %}
-                                <p class="ms-auto navbar-text actions mx-2"><a class="login"
-                    href="login.html" style="color: rgba(252, 0, 0, 0.9);">Log
-                    In</a>
-                    <a class="btn btn-light action-button" role="button"
-                    href="{% url 'account_singup' %}"
-                    style="color: rgba(248, 4, 4, 0.9);background: var(--bs-gray-200);border-radius: 10px;border-style: solid;border-color: rgba(0,0,0,0.9);font-size: 16px;padding: 5px 8px;">Sing Up</a></p>
-            {% endif %}
-                
-    
+    <a href="/profile" class="text text-decoration-none text-danger">{% user_display user %}</a>
+    <a class="btn btn-light action-button mx-2" role="button" href="{% url 'account_logout' %}"
+        style="color: rgba(248, 4, 4, 0.9);background: var(--bs-gray-200);border-radius: 10px;border-style: solid;border-color: rgba(0,0,0,0.9);font-size: 16px;padding: 5px 8px;">Logout</a>
+    </p>
+    {% else %}
+    <p class="ms-auto navbar-text actions mx-2"><a class="login" href="login.html"
+            style="color: rgba(252, 0, 0, 0.9);">Log
+            In</a>
+        <a class="btn btn-light action-button" role="button" href="{% url 'account_singup' %}"
+            style="color: rgba(248, 4, 4, 0.9);background: var(--bs-gray-200);border-radius: 10px;border-style: solid;border-color: rgba(0,0,0,0.9);font-size: 16px;padding: 5px 8px;">Sing
+            Up</a>
+    </p>
+    {% endif %}
+
+
 </nav>
