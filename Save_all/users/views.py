@@ -1,4 +1,4 @@
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import get_object_or_404, render, reverse, redirect
 from django.views import View
 from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.forms import PasswordChangeForm
@@ -29,8 +29,7 @@ class MyProfileView(View):
 
 class UserProfileView(View):
     def get(self, request, username, *args, **kwargs):
-        # Use 'user__username' instead of 'user_username'
-        user_profile = Profile.objects.get(user__username=username)
+        user_profile = get_object_or_404(Profile, user__username=username)
 
         if user_profile.user == request.user:
             return HttpResponseRedirect(reverse("profile"))

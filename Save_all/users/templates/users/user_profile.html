@@ -5,7 +5,30 @@
 {% block content %}
 
 <div class="container my-1">
-    <div class="profile-online">
+
+  <div class="profile-info">
+    <div class="avatar-container">
+
+      <img src="{{ user.profile.image.url }}" alt="avatar" style="width: 210px; height: 300px;">
+
+    </div>
+  </div>
+  <div class="profile-bio">
+    <div class="profile-name">
+      <span class="text-danger">Name: </span>{{ user_profile }}
+    </div>
+    <div class="profile-age">
+      <span class="text-danger">Age: </span>{% if user_profile.age %}
+      {{user_profile.age }} years old {% else %} Unknown {% endif %}
+    </div>
+    <div class="profile-bio-text">
+      <span class="text-danger">Bio:</span>
+      {% if user_profile.bio %}
+      {{ user_profile.bio }}
+      {% else %}
+      No bio
+      {% endif %}
+      <div class="profile-online">
         {% if user_profile.online %}
         Online<span class="online-circle" title="Online"></span>
         {% elif user_profile.last_seen %}
@@ -13,39 +36,189 @@
         {% else %}
         Offline
         {% endif %}
+      </div>
     </div>
-    <div class="profile-info">
-        <div class="avatar-container">
-
-            <img src="{{ user.profile.image.url }}" alt="avatar"
-                style="width: 210px; height: 300px;">
-
-        </div>
-    </div>
-    <div class="profile-bio">
-        <div class="profile-name">
-            <span class="text-danger">Name: </span>{{ user_profile }}
-        </div>
-        <div class="profile-age">
-            <span class="text-danger">Age: </span>{% if user_profile.age %} {{
-            user_profile.age }} years old {% else %} Unknown {% endif %}
-        </div>
-        <div class="profile-bio-text">
-            <span class="text-danger">Bio:</span>
-            {% if user_profile.bio %}
-            {{ user_profile.bio }}
-            {% else %}
-            No bio
-            {% endif %}
-        </div>
-    </div>
+  </div>
 
 </div>
 
 <input type="hidden" value="{{ user_profile.id }}" id="profile_id">
 <input type="hidden" value="1" id="post_type">
-<input type="hidden" value="{{ user_profile.user.username }}"
-    id="profile_username">
+<input type="hidden" value="{{ user_profile.user.username }}" id="profile_username">
 {% csrf_token %}
 
+<style>
+  .send-friend-button,
+  .accept-friend-button,
+  .friend-buttons .chat-button,
+  .community-actions .join-community-button {
+    background-color: #310072;
+    border: 1px solid #2A0061;
+  }
+
+  .send-friend-button:hover,
+  .accept-friend-button:hover,
+  .friend-buttons .chat-button:hover,
+  .community-actions .join-community-button:hover {
+    background-color: black;
+    background-color: #8120FF;
+  }
+
+  .send-friend-button[disabled] {
+    background-color: #543281;
+    cursor: not-allowed !important;
+  }
+
+  .decline-friend-button,
+  .cancel-friend-button,
+  .unfriend-button,
+  .community-actions .leave-community-button {
+    background-color: rgb(250, 3, 3);
+    border: 1px solid black;
+  }
+
+  .decline-friend-button:hover,
+  .cancel-friend-button:hover,
+  .unfriend-button:hover,
+  .community-actions .leave-community-button:hover {
+
+    background-color: rgba(39, 39, 39, 0.986);
+  }
+</style>
+<!-- Display friend request status -->
+<div class="container">
+  <div id="friend-request-status">
+    {% if user_profile in request.user.profile.friends.all %}
+    <p>You are already friends.</p>
+    {% elif user_profile in request.user.profile.pending_friends_in %}
+    <p>Friend request received. What do you want to do?</p>
+    <button class="accept-friend-button" data-profile-id="{{ user_profile.id }}">Accept</button>
+    <button class="decline-friend-button" data-profile-id="{{ user_profile.id }}">Decline</button>
+    {% elif user_profile in request.user.profile.pending_friends_out %}
+    <p>Your friend request is pending. You can cancel it.</p>
+    <button class="cancel-friend-button" data-profile-id="{{ user_profile.id }}">Cancel</button>
+    {% elif user_profile not in request.user.friends.all %}
+    <button class="send-friend-button" data-profile-id="{{ user_profile.id }}">Add to friends</button>
+    {% endif %}
+  </div>
+</div>
+<!-- Display user's friends -->
+<div class="container">
+  <div id="user-friends">
+    <h3>{{ user_profile.user.username }}'s friends</h3>
+    <ul>
+      {% for friend in user_profile.friends.all %}
+      <li>{{ friend.username }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+
+<!-- JavaScript to handle AJAX requests -->
+<script>
+  $(document).ready(function () {
+    // Send friend request
+    $(".send-friend-button").click(function () {
+      var profileId = $(this).data("profile-id");
+      var $thisButton = $(this);
+
+      $.ajax({
+        type: 'POST',
+        url: '{% url "friends:send-friend-request" %}',
+        data: {
+          'profile_id': profileId,
+          'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },
+        success: function (response) {
+          // Check if the request was successful
+          if (response.status === 'ok') {
+            // Update UI or show a success message
+            console.log('Friend request sent successfully');
+
+            // Toggle visibility of the buttons directly
+            $thisButton.hide();
+            $(".cancel-friend-button[data-profile-id='" + profileId + "']").show();
+          } else {
+            // Handle error or show an error message
+            console.error('Error sending friend request');
+          }
+        },
+        error: function (error) {
+          // Handle error
+          console.error('Error sending friend request');
+        }
+      });
+    });
+
+    // ... (other sections remain unchanged)
+
+
+    // Accept friend request
+    $(".accept-friend-button").click(function () {
+      var profileId = $(this).data("profile-id");
+      $.ajax({
+        type: 'POST',
+        url: '{% url "friends:accept-friend-request" %}',
+        data: {
+          'profile_id': profileId,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+          if (response.status === 'ok') {
+            // Update UI or show a success message
+            console.log('Friend request accepted successfully');
+          } else {
+            // Handle error or show an error message
+            console.error('Error accepting friend request');
+          }
+        }
+      });
+    });
+
+    // Decline friend request
+    $(".decline-friend-button").click(function () {
+      var profileId = $(this).data("profile-id");
+      $.ajax({
+        type: 'POST',
+        url: '/decline-friend-request/',
+        data: {
+          'profile_id': profileId,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+          if (response.status === 'ok') {
+            // Update UI or show a success message
+            console.log('Friend request declined successfully');
+          } else {
+            // Handle error or show an error message
+            console.error('Error declining friend request');
+          }
+        }
+      });
+    });
+
+    // Cancel friend request
+    $(".cancel-friend-button").click(function () {
+      var profileId = $(this).data("profile-id");
+      $.ajax({
+        type: 'POST',
+        url: '/friends/cancel-friend-request/',
+        data: {
+          'profile_id': profileId,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+          if (response.status === 'ok') {
+            // Update UI or show a success message
+            console.log('Friend request canceled successfully');
+          } else {
+            // Handle error or show an error message
+            console.error('Error canceling friend request');
+          }
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
