@@ -2,6 +2,7 @@ import random
 from typing import Any, Dict, Optional
 
 from django import forms
+from django.views import View
 
 from blog.models import Comment, Post
 from django.contrib.auth.decorators import login_required
@@ -12,6 +13,7 @@ from django.forms.models import BaseModelForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
 
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -206,3 +208,30 @@ def like_post(request):
         html = render_to_string("blog/like_section.html", context, request=request)
 
     return JsonResponse({"form": html})
+
+
+@method_decorator(login_required, name="dispatch")
+class LikeCommentView(View):
+    def post(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, id=request.POST.get("id"))
+        liked = False
+
+        if comment.likes_comment.filter(id=request.user.id).exists():
+            comment.likes_comment.remove(request.user)
+        else:
+            comment.likes_comment.add(request.user)
+            liked = True
+
+        context = {
+            "comment": comment,
+            "total_likes": comment.total_likes_comment(),
+            "liked": liked,
+        }
+
+        if request.is_ajax():
+            html = render_to_string(
+                "blog/comment_like_section.html", context, request=request
+            )
+            return JsonResponse({"form": html})
+
+        return JsonResponse({"error": "Invalid request"})
