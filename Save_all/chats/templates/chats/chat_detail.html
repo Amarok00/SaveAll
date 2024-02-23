@@ -1,0 +1,98 @@
+{% extends 'templates_project/base_chat.html' %}
+{% load static %}
+{% block extrajs %}
+<!-- link to moment.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/linkifyjs@3.0.5/dist/linkify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/linkify-html@3.0.5/dist/linkify-html.min.js"></script>
+{% endblock %}
+
+{% block extracss %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.css"
+    integrity="sha512-vEia6TQGr3FqC6h55/NdU3QSM5XR6HSl5fW71QTKrgeER98LIMGwymBVM867C1XHIkYD9nMTfWK2A0xcodKHNA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+{% block title %}
+Chat with {{ second_user.profile }}
+{% endblock %}
+{% block content %}
+
+<div class="container mt-1">
+    <div class="chat-container">
+        <div class="chat-navbar">
+            <a href="{% url 'user_profile' second_user %}" class="message-author chat-navbar-author">
+                <img class="message-avatar" src="{{ second_user.profile.image.url }}" alt="{{ second_user.profile }}" />
+                {{ second_user.profile }}
+            </a>
+            <div class="chat-navbar-status">
+                {% if second_user.profile.online %}
+                Online<span class="online-circle" title="Online"></span>
+                {% elif second_user.profile.last_seen %}
+                Last seen {{ second_user.profile.last_seen|timesince }} ago
+                {% else %}
+                Offline
+                {% endif %}
+            </div>
+        </div>
+        <div class="chat-messages">
+            {% if chat.messages.all %}
+            {% for message in chat.messages.all %}
+            {% if message.author == request.user %}
+            <div class="chat-message my-message">
+                {% else %}
+                <div class="chat-message other-message">
+                    {% endif %}
+                    <div class="message-author">
+
+                        <img class="message-avatar" src="{{ message.author.profile.image.url }}"
+                            alt="{{ message.author }}" />
+
+                        {{ message.author.profile }}
+                    </div>
+                    {% if message.has_media %}
+                    <div class="message-media">
+                        {% if message.image.url %}
+                        <img src="{{ message.image.url }}" alt="{{ message.image }}" />
+                        {% else %}
+                        <video controls>
+                            <source src="{{ message.video.url }}" type="video/mp4">
+                        </video>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="message-text text-black">
+                        {{ message.content|safe|linebreaksbr }}
+                    </div>
+                    <div class="message-time">
+                        {{ message.sent_at }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="no-messages">
+                    No messages yet.
+                </div>
+                {% endif %}
+            </div>
+            <div class="chat-input-container">
+                <span class="typing"></span>
+                <textarea class="chat-input" placeholder="Type your message here..."></textarea>
+                <button class="chat-send-button">Send</button>
+                <input type="hidden" id="username" value="{{ request.user.username }}">
+                <input type="hidden" id="chatId" value="{{ chat.id }}">
+            </div>
+        </div>
+    </div>
+    {% csrf_token %}
+    {{ room_name|json_script:"room_name" }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"
+        integrity="sha512-hkvXFLlESjeYENO4CNi69z3A1puvONQV5Uh+G4TUDayZxSLyic5Kba9hhuiNLbHqdnKNMk2PxXKm0v7KDnWkYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $('.chat-input').emojioneArea();
+    </script>
+    <script src="{% static 'js/chatRoom.js' %}"></script>
+
+    {% endblock %}
