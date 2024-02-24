@@ -9,15 +9,16 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Save_all.settings")
 
 from django.core.asgi import get_asgi_application  # noqa
 
-django_asgi_app = get_asgi_application()  # noqa
 from channels.routing import ProtocolTypeRouter, URLRouter  # noqa
 from channels.auth import AuthMiddlewareStack  # noqa
 import chats.routing  # noqa
 import notifications.routing  # noqa
+
+django_asgi_app = get_asgi_application()  # noqa
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Save_all.settings")
 
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.
