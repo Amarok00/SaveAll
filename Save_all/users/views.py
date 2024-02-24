@@ -48,17 +48,6 @@ class UserProfileView(View):
         return render(request, "users/user_profile.html", context)
 
 
-class EditImageAjaxView(View):
-
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        new_image = request.FILES["image"]
-        user.profile.image = new_image
-        user.profile.save()
-        image_url = user.profile.image.url
-        return JsonResponse({"success": True, "image_url": image_url})
-
-
 class EditProfileView(View):
 
     def get(self, request, *args, **kwargs):
@@ -76,13 +65,32 @@ class EditProfileView(View):
 
     def post(self, request, *args, **kwargs):
         if request.method == "POST":
-            profile_form = EditProfileInfoForm(
-                request.POST, instance=request.user.profile
+            # Get the profile instance for the current user
+            profile_instance = get_object_or_404(Profile, user=request.user)
+            print(f"Current User: {request.user}")
+            print(f"Profile Instance User: {profile_instance.user}")
+
+            # Initialize both forms with the correct instance
+            profile_form = EditProfileInfoForm(request.POST, instance=profile_instance)
+            image_form = ChangeImageForm(
+                request.POST, request.FILES, instance=profile_instance
             )
-            if profile_form.is_valid():
+
+            # Check if both forms are valid
+            if profile_form.is_valid() and image_form.is_valid():
+                # Save changes for both forms
                 profile_form.save()
-                return JsonResponse({"success": True}) and redirect("/profile/")
-            return JsonResponse({"success": False, "errors": profile_form.errors})
+                image_form.save()
+                print("Changes saved successfully.")
+                return JsonResponse({"success": True})
+            else:
+                # If there are validation errors, return the errors in the response
+                errors = {
+                    "profile_errors": profile_form.errors.as_json(),
+                    "image_errors": image_form.errors.as_json(),
+                }
+                print(f"Validation Errors: {errors}")
+                return JsonResponse({"success": False, "errors": errors})
 
 
 class ResetImageView(View):

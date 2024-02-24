@@ -11,33 +11,35 @@
       <article class="blog-card">
         <div class="blog-card__background">
           <div class="card__background--wrapper">
-                            {% if post.image %}
+            {% if post.image %}
             <div class="card__background--main" style="background-image: url('{{ post.image.url }}');">
-{% else %}
-                <div class="card__background--main" style="background-image: url('bootstrap5/assets/img/pixlr-bg.png'); width: 1500; height:700 ">
-{% endif %}
+              {% else %}
+              <div class="card__background--main"
+                style="background-image: url('bootstrap5/assets/img/pixlr-bg.png'); width: 1500; height:700 ">
+                {% endif %}
 
-              <div class="card__background--layer"></div>
+                <div class="card__background--layer"></div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="blog-card__head">
-          <span class="date__box">
-            <span class="date__day">{{ post.data_create|date:" d " }}</span>
-            <span class="date__month">{{ post.data_create|date:"F  Y" }}</span>
-          </span>
-        </div>
-        <div class="blog-card__info">
-          <h5><a href="{% url 'post-detail' post.slug post.pk %}"
-                        class="text-decoration-none text-danger">{{ post.title}}</a></h5>
-          <p>
-            <a href="{% url 'user_profile' username=post.author.username %}" class="icon-link-author mr-3" ><i class="fa fa-pencil-square-o "></i>{{ post.author }}</a>
-            <a href="#" class="icon-link-author"><i class="fa fa-comments-o"></i> 
-            </a>
-          </p>
-          <p>{{ post.content|safe|linebreaks| truncatewords:20 }}</p>
-          <a href="{% url 'post-detail' post.slug post.pk %}" class="btn btn--with-icon"><i class="btn-icon fa fa-long-arrow-right"></i>READ MORE</a>
-        </div>
+          <div class="blog-card__head">
+            <span class="date__box">
+              <span class="date__day">{{ post.data_create|date:" d " }}</span>
+              <span class="date__month">{{ post.data_create|date:"F Y" }}</span>
+            </span>
+          </div>
+          <div class="blog-card__info">
+            <h5><a href="{% url 'post-detail' post.slug post.pk %}" class="text-decoration-none text-danger">{{post.title}}</a></h5>
+            <p>
+              <a href="{% url 'user_profile' username=post.author.username %}" class="icon-link-author mr-3"><i
+                  class="fa fa-pencil-square-o "></i>{{ post.author }}</a>
+              <a href="{% url 'chat_detail' username=post.author.username %}"" class=" icon-link-author"><i
+                  class="fa fa-comments-o"></i>
+            </p>
+            <p>{{ post.content|safe|linebreaks| truncatewords:20 }}</p>
+            <a href="{% url 'post-detail' post.slug post.pk %}" class="btn btn--with-icon"><i
+                class="btn-icon fa fa-long-arrow-right"></i>READ MORE</a>
+          </div>
       </article>
     </div>
   </div>
@@ -49,23 +51,25 @@
 <!-- Paginator code -->
 <div class="pagination centered-pag ">
   {% if page_obj.has_previous %}
-    <a class="btn btn-outline-info mb-4 btn-lg mx-1 custom-button " href="?page=1">Первая</a>
-    <a class="btn btn-outline-info mb-4 mx-1 custom-button "  href="?page={{page_obj.previous_page_number}}">Предыдущая</a>
+  <a class="btn btn-outline-info mb-4 btn-lg mx-1 custom-button " href="?page=1">Первая</a>
+  <a class="btn btn-outline-info mb-4 mx-1 custom-button " href="?page={{page_obj.previous_page_number}}">Предыдущая</a>
   {% endif %}
 
   {% for num in page_obj.paginator.page_range %}
-    {% if page_obj.number == num %}
-      <a class="btn btn-info mb-4 btn-lg mx-1 custom-button " href="?page={{num}}">{{num}}</a>
-    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-      <a class="btn btn-outline-info mb-4 btn-lg mx-1 custom-button" href="?page={{num}}">{{num}}</a>
+  {% if page_obj.number == num %}
+  <a class="btn btn-info mb-4 btn-lg mx-1 custom-button " href="?page={{num}}">{{num}}</a>
+  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+    class="btn btn-outline-info mb-4 btn-lg mx-1 custom-button" href="?page={{num}}">{{num}}</a>
     {% endif %}
-  {% endfor %}
+    {% endfor %}
 
-  {% if page_obj.has_next %}
-    <a class="btn btn-outline-info mb-4 btn-lg mx-1 custom-button c" href="?page={{page_obj.next_page_number}}">Следующая</a>
-    <a class="btn btn-outline-info mb-4 btn-lg custom-button " href="?page={{page_obj.paginator.num_pages}}">Последняя</a>
-  {% endif %}
+    {% if page_obj.has_next %}
+    <a class="btn btn-outline-info mb-4 btn-lg mx-1 custom-button c"
+      href="?page={{page_obj.next_page_number}}">Следующая</a>
+    <a class="btn btn-outline-info mb-4 btn-lg custom-button "
+      href="?page={{page_obj.paginator.num_pages}}">Последняя</a>
+    {% endif %}
 </div>
 
- 
+
 {% endblock %}

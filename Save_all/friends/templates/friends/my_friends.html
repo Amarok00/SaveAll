@@ -7,13 +7,13 @@
     <div class="row">
         <!-- Первый контейнер для списка друзей -->
         <div class="col-md-6">
-            <h1>My Friends</h1>
+            <h1>Мои друзья </h1>
             <div class="friends-container-main">
                 <div class="friends-container ">
                     <div id="friends" class="profiles-list align-self-start">
                         {% if friends %}
                         {% for friend in friends %}
-                        <div class="profile-list-card">
+                        <div class="profile-list-card mt-3">
                             <!-- Ваш код для списка друзей -->
                             <div class="profile-list-avatar">
                                 <div class="d-flex">
@@ -52,8 +52,8 @@
                         {% endfor %}
                         {% else %}
                         <div class="no-friends">
-                            <h2>You have no friends</h2>
-                            <p>Find people to become friends with on the <a href="#">search page</a>.</p>
+                            <h2>У вас еще нет друзей </h2>
+                            <p>Восльзуйтесь поиском для поиска друзей  <a href="#">Страница поиска</a>.</p>
                         </div>
                         {% endif %}
                     </div>
@@ -64,9 +64,8 @@
         <div class="col-md-6 ">
             <div id="friend-requests" class="profiles-list align-self-start">
                 {% if pending_requests %}
-                <h2>Incoming Friend Requests</h2>
-                <h8>Go to space user profile and accept or reject request
-                    there.</h8><br /><br />
+                <h2>Входящие запросы </h2>
+                <h8>Передите на профиль человека для добовления в друзья</h8><br /><br />
                 {% for request in pending_requests %}
                 <div class="profile-list-card">
                     <!-- Ваш код для входящих запросов -->

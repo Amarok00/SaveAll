@@ -3,7 +3,6 @@ from . import views
 from .views import (
     MyProfileView,
     UserProfileView,
-    EditImageAjaxView,
     EditProfileView,
     ResetImageView,
     DeleteUserView,

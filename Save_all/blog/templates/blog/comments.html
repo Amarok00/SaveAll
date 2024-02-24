@@ -1,3 +1,4 @@
+{% load static %}
 <div id="tempocs">
 
     {% if user.is_authenticated %}
@@ -5,8 +6,7 @@
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class=" mb-4">Add Comment</legend>
-            <textarea required style="width: 100%;" name="body" id="cmtbody"
-                cols="40" rows="5"></textarea>
+            <textarea required style="width: 100%;" name="body" id="cmtbody" cols="40" rows="5"></textarea>
         </fieldset>
         <div class="form-group">
             <button class="btn btn-outline-info" id="acsubmit" type="submit">Add
@@ -28,10 +28,14 @@
 
     <div class="content-section">
         <div class="media g-mb-30 media-comment">
-            <img
-                class="d-flex g-width-10 g-height-10 rounded-circle g-mt-3 g-mr-15 rounded-circle article-img"
-                src="{{comment.name_author.profile.image.url}}"
-                alt="Profile-image" style="width: 30px; height: 30px;">
+            {% if comment.name_author.profile.image.url %}
+            <img class="rounded-circle flex-shrink-0 me-3 fit-cover" src="{{ comment.name_author.profile.image.url }}"
+                alt="avatar" style="width: 30px; height: 30px;">
+            {% else %}
+            <!-- Display default profile image -->
+            <img src="{% static 'default_profile.jpg' %}" alt="avatar"
+                class="rounded-circle flex-shrink-0 me-3 fit-cover" style="width: 30px; height: 30px;">
+            {% endif %}
             <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
                 <small> by {{ comment.name_author.username }}</small><br>
                 <div class="g-mb-15">
@@ -48,21 +52,16 @@
                             {% for key, value in clikes.items %}
                             {% if key == comment.id %}
                             {% if value == True %}
-                            <button type="submit" name="comment_id"
-                                value="{{comment.id}}"
-                                class="btn btnhrt clike"><i
+                            <button type="submit" name="comment_id" value="{{comment.id}}" class="btn btnhrt clike"><i
                                     class="fasfa-heart"></i></button>
                             {% else %}
-                            <button type="submit" name="comment_id"
-                                value="{{comment.id}}"
-                                class="btn btnhrt clike"><i
+                            <button type="submit" name="comment_id" value="{{comment.id}}" class="btn btnhrt clike"><i
                                     class="far fa-heart"></i></button>
                             {% endif %}
                             {% endif %}
                             {% endfor %}
                             {% else %}
-                            <button class="btn btnhrt"><i
-                                    class="far fa-heart"></i></button>
+                            <button class="btn btnhrt"><i class="far fa-heart"></i></button>
                             {% endif %}
 
                             {{comment.total_clikes}}
@@ -70,10 +69,8 @@
                     </li>
                     <li class="list-inline-item">
                         &nbsp;&nbsp;&nbsp;
-                        <a class="btn btncmt" data-toggle="collapse"
-                            href="#multiCollapse{{comment.id}}" role="button"
-                            aria-expanded="false"
-                            aria-controls="multiCollapse{{comment.id}}">
+                        <a class="btn btncmt" data-toggle="collapse" href="#multiCollapse{{comment.id}}" role="button"
+                            aria-expanded="false" aria-controls="multiCollapse{{comment.id}}">
                             <i class="far fa-comment"></i>
                         </a>
                         {{comment.replies.count}}
@@ -82,22 +79,19 @@
 
                 <br>
 
-                <div class="collapse multi-collapse"
-                    id="multiCollapse{{comment.id}}">
+                <div class="collapse multi-collapse" id="multiCollapse{{comment.id}}">
                     <hr>
                     {% if user.is_authenticated %}
                     <form class="reply-form" method="POST" action=".">
                         {% csrf_token %}
-                        <input type="hidden" name="comment_id"
-                            value="{{comment.id}}">
+                        <input type="hidden" name="comment_id" value="{{comment.id}}">
                         <fieldset class="form-group">
                             <legend class="h5 mb-4">Replies :</legend>
-                            <textarea required style="width: 100%;" name="body"
-                                id="cmt-body" cols="40" rows="2"></textarea>
+                            <textarea required style="width: 100%;" name="body" id="cmt-body" cols="40"
+                                rows="2"></textarea>
                         </fieldset>
                         <div class="form-group">
-                            <button class="btn btn-outline-info"
-                                type="submit">Reply</button>
+                            <button class="btn btn-outline-info" type="submit">Reply</button>
                         </div>
                     </form>
                     {% endif %}
@@ -115,29 +109,23 @@
                     <ul class="list-inline d-sm-flex my-0">
                         <li class="list-inline-item g-mr-20">
 
-                            <form action="{% url 'comment-like' %}"
-                                method="POST">
+                            <form action="{% url 'comment-like' %}" method="POST">
                                 {% csrf_token %}
 
                                 {% if user.is_authenticated %}
                                 {% for key, value in clikes.items %}
                                 {% if reply.id == key %}
                                 {% if value == True %}
-                                <button type="submit" name="comment_id"
-                                    value="{{reply.id}}"
-                                    class="btn btnhrt clike"><i
+                                <button type="submit" name="comment_id" value="{{reply.id}}" class="btn btnhrt clike"><i
                                         class="fas fa-heart"></i></button>
                                 {% else %}
-                                <button type="submit" name="comment_id"
-                                    value="{{reply.id}}"
-                                    class="btn btnhrt clike"><i
+                                <button type="submit" name="comment_id" value="{{reply.id}}" class="btn btnhrt clike"><i
                                         class="far fa-heart"></i></button>
                                 {% endif %}
                                 {% endif %}
                                 {% endfor %}
                                 {% else %}
-                                <button class="btn btnhrt"><i
-                                        class="far fa-heart"></i></button>
+                                <button class="btn btnhrt"><i class="far fa-heart"></i></button>
                                 {% endif %}
 
                                 {{reply.total_clikes}}

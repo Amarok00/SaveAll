@@ -9,24 +9,29 @@
   <div class="profile-info">
     <div class="avatar-container">
 
-      <img src="{{ user.profile.image.url }}" alt="avatar" style="width: 210px; height: 300px;">
+      {% if request.user_profile.image %}
+      <img src="{{ request.user_profile.image.url }}" alt="avatar" style="width: 210px; height: 300px;">
+      {% else %}
+      <!-- Display default profile image -->
+      <img src="{% static 'default_profile.jpg' %}" alt="avatar" style="width: 210px; height: 300px;">
+      {% endif %}
 
     </div>
   </div>
   <div class="profile-bio">
     <div class="profile-name">
-      <span class="text-danger">Name: </span>{{ user_profile }}
+      <span class="text-danger">Имя: </span>{{ user_profile }}
     </div>
     <div class="profile-age">
-      <span class="text-danger">Age: </span>{% if user_profile.age %}
+      <span class="text-danger">Возраст: </span>{% if user_profile.age %}
       {{user_profile.age }} years old {% else %} Unknown {% endif %}
     </div>
     <div class="profile-bio-text">
-      <span class="text-danger">Bio:</span>
+      <span class="text-danger">Информация:</span>
       {% if user_profile.bio %}
       {{ user_profile.bio }}
       {% else %}
-      No bio
+      Нет информации 
       {% endif %}
       <div class="profile-online">
         {% if user_profile.online %}

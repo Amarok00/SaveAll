@@ -5,12 +5,11 @@ from .models import Profile
 class ChangeImageForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['image']
+        fields = ["image"]
         widgets = {
-            'image': forms.ClearableFileInput(attrs={
-                'multiple': False,
-                'class': 'edit-image-btn'
-            }),
+            "image": forms.ClearableFileInput(
+                attrs={"multiple": False, "class": "edit-image-btn"}
+            ),
         }
 
 

@@ -1,117 +1,135 @@
 {% extends "users/base.html" %}
 {% load static %}
 
-
 {% block title %} Edit profile {% endblock %}
 {% block content %}
-    <div class="container">
-        <div class="profile-info">
+<meta name="csrf-token" content="{{ csrf_token }}">
+<div class="container">
+    <div class="profile-info">
         <div class="avatar-container edit-page">
             {% if user.profile.image %}
-                        <img src="{{ user.profile.image.url }}" alt="avatar" style="width: 210px; height: 300px;">
+        <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% endif %}" alt="avatar"
+            style="width: 210px; height: 300px;">
+
             {% endif %}
         </div>
-        </div>
-        <div class="profile-bio profile-bio-edit">
-            <form method="post" class="edit-bio">
+    </div>
+    <div class="profile-bio profile-bio-edit">
+        <form method="post" enctype="multipart/form-data" class="edit-bio" id="combined-form">
             <h2 class="profile-bio-edit-title">Edit personal data</h2>
-                {% csrf_token %}
-                {{ profile_form }}
-                <button class="btn-success my-1" id="save-bio-btn">Save changes</button>
-            </form>
-        </div>
+            {% csrf_token %}
+
+            <!-- Fields from profile_form -->
+            {{ profile_form }}
+
+            <!-- Image upload fields -->
+            <input type="file" name="image" accept="image/*" id="id_image" class="edit-image-btn">
+            <label for="id_image" class="edit-image-label">
+                <img id="image-preview" src="{% if user.profile.image %}{{ user.profile.image.url }}{% endif %}"
+                    alt="avatar" width="50" height="50">
+            </label>
+
+            <!-- Save changes button for the combined form -->
+            <button class="btn-success my-1" id="save-combined-btn">Save Changes</button>
+        </form>
     </div>
     <br><br><br>
     <div class="container">
-        <h5 class="text-danger">Delete account</h5> 
+        <h5 class="text-danger">Delete account</h5>
         <p>Are you sure you want to permanently delete your account?</p>
         <p>This action is irreversible!!!</p>
-<div class="d-flex mx-1">
-    <form method="post" action="{% url 'delete-user' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger mx-1">Yes, delete</button>
-    </form>
-    <button class="btn "><a  class="btn" href="/profile">No, cancel</a></button>
-    
-</div>
+        <div class="d-flex mx-1">
+            <form method="post" action="{% url 'delete-user' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger mx-1">Yes, delete</button>
+            </form>
+            <button class="btn "><a class="btn" href="/profile">No, cancel</a></button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
+        $(document).ready(function () {
+            // Initialize datepicker
             $('#id_birth_date').datepicker({
                 changeMonth: true,
                 changeYear: true,
                 dateFormat: 'yy-mm-dd',
                 yearRange: '-100:-12',
-
             });
-            $('#save-bio-btn').on('click', () => {
-                let form = $('.edit-bio');
-                let data = form.serialize();
-                // append 'form_type' to the data
-                data += '&form_type=profile';
-                // make all inputs disabled
-                form.find('input').prop('disabled', true);
-                // make all buttons disabled
-                form.find('button').prop('disabled', true);
-                // make all selects disabled
-                form.find('select').prop('disabled', true);
-                // make all textareas disabled
-                form.find('textarea').prop('disabled', true);
-                // add loading icon next to save button
-                $('#save-bio-btn').append('<i class="fas fa-spinner fa-spin"></i>');
+
+            // Save bio button click event
+            $('#save-combined-btn').on('click', function (e) {
+                e.preventDefault();
+
+                let form = $('#combined-form')[0];
+                let data = new FormData(form);
+
+                // Perform AJAX request
                 $.ajax({
                     url: "{% url 'edit_profile' %}",
                     type: 'POST',
                     data: data,
-                    success: function(data) {
-                        // remove loading icon
-                        $('#save-bio-btn i').remove();
-                        // make all inputs enabled
-                        form.find('input').prop('disabled', false);
-                        // make all buttons enabled
-                        form.find('button').prop('disabled', false);
-                        // make all selects enabled
-                        form.find('select').prop('disabled', false);
-                        // make all textareas enabled
-                        form.find('textarea').prop('disabled', false);
-                        // show success message
-                        $('#save-bio-btn').after('<span class="success-message">Saved!</span>');
-                        // remove success message after 3 seconds
-                        setTimeout(() => {
-                            $('.success-message').remove();
-                        }, 3000);
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        // Enable form elements
+                        $('#combined-form input, #combined-form button').prop('disabled', false);
+
+                        // Optionally show a success message
+                        // ...
+
+                        console.log("Image successfully uploaded and form submitted.");
+                        console.log("Server response:", response);
                     },
-                    error: function(data) {
-                        // remove loading icon
-                        $('#save-bio-btn i').remove();
-                        // make all inputs enabled
-                        form.find('input').prop('disabled', false);
-                        // make all buttons enabled
-                        form.find('button').prop('disabled', false);
-                        // make all selects enabled
-                        form.find('select').prop('disabled', false);
-                        // make all textareas enabled
-                        form.find('textarea').prop('disabled', false);
-                        // show error message
-                        $('#save-bio-btn').after('<span class="error-message">Error!</span>');
-                        // remove error message after 3 seconds
-                        setTimeout(() => {
-                            $('.error-message').remove();
-                        }, 3000);
+                    error: function (error) {
+                        // Enable form elements
+                        $('#combined-form input, #combined-form button').prop('disabled', false);
+
+                        // Optionally show an error message
+                        // ...
+
+                        console.error("Error uploading image or submitting form:", error);
+                    },
+                    complete: function (xhr, status) {
+                        console.log("Request completed with status:", status);
+                        console.log("Data being sent:", data);
                     }
                 })
-
-            })
+            });
+            // Toggle delete profile dropdown
             $('.delete-profile-button').on('click', (e) => {
                 $('.delete-profile-dropdown').toggleClass('hidden');
                 $('html, body').animate({
                     scrollTop: $(document).height()
                 }, 'slow');
             });
+
+            // Close delete profile dropdown
             $('.delete-cancel').on('click', (e) => {
                 $('.delete-profile-dropdown').addClass('hidden');
             });
+
+            // Function to handle the image change event
+            $('#id_image').change(function () {
+                readURL(this); // Display the selected image in the preview
+            });
+
+            // Function to display the selected image in the preview
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Append a timestamp or a random parameter to the image URL to bust the cache
+                        var timestamp = new Date().getTime();
+                        $('#image-preview').attr('src', e.target.result + '?' + timestamp);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        });
     </script>
-{% endblock %}
+
+    {% endblock %}

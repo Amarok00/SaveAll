@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from cloudinary.models import CloudinaryField
 from datetime import datetime
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
