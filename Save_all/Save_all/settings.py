@@ -44,10 +44,8 @@ DEBUG = True
 
 INTERNAL_IPS = ["127.0.0.1", "0.0.0.0", "localhost"]
 
-ALLOWED_HOSTS = ["*",
-                '136e-185-154-12-64.ngrok-free.app'
-]
-
+ALLOWED_HOSTS = ["*", "6222-46-242-11-188.ngrok-free.app"]
+CSRF_TRUSTED_ORIGINS = ["https://6222-46-242-11-188.ngrok-free.app"]
 
 # Application definition
 

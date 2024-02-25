@@ -22,11 +22,6 @@ class ChatView(View):
         """GET method for chat page"""
         print("Username from kwargs:", kwargs["username"])
         second_user = get_object_or_404(User, username=kwargs["username"])
-        print("Second user profile:", second_user.profile)
-        print("just second",second_user)
-        print("Request user profile:", request.user.profile)
-        print("Request user friends:", request.user.profile.friends.all())
-        print(second_user.profile in request.user.profile.friends.all())
 
         if second_user in request.user.profile.friends.all():
             chat = (

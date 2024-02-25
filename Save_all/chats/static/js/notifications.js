@@ -2,7 +2,7 @@
 $(document).ready(function () {
     const roomName = $('input#userUsername').val();
     const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const port = 8001;  // Set the correct port
+    const port = 80;  // Set the correct port
     const notificationSocket = new WebSocket(`${socketProtocol}//${window.location.hostname}:${port}/ws/chat/${roomName}/`);
 
     const updateFriendRequests = function (num) {

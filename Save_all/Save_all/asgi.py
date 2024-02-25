@@ -17,8 +17,9 @@ from channels.auth import AuthMiddlewareStack  # noqa
 import chats.routing  # noqa
 import notifications.routing  # noqa
 
-django_asgi_app = get_asgi_application()  # noqa
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Save_all.settings")
+django_asgi_app = get_asgi_application()  # noqa
+
 
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.
