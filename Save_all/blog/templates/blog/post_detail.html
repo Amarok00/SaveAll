@@ -14,9 +14,9 @@
                 </div>
                 <div class="col-xl-12"><img width="500" height="500" src="{{ post.image.url }}">
                     <div class="d-flex">
-                        {% if request.user_profile.image %}
+                        {% if request.user.profile.image %}
                         <img class="rounded-circle flex-shrink-0 me-3 fit-cover"
-                            src="{{ request.user_profile.image.url }}" alt="avatar" style="width: 50px; height: 50px;">
+                            src="{{ request.user.profile.image.url }}" alt="avatar" style="width: 50px; height: 50px;">
                         {% else %}
                         <!-- Display default profile image -->
                         <img src="{% static 'default_profile.jpg' %}" alt="avatar"
