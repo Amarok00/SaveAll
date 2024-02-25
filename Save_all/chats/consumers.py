@@ -1,7 +1,5 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .models import Message, Chat
-from django.contrib.auth.models import User
 from channels.db import database_sync_to_async
 
 
@@ -107,6 +105,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # functions to access database and get data asynchronously
     @database_sync_to_async
     def save_message(self, message, username, chat_id):
+        from .models import Message, Chat  # Import here instead
+        from django.contrib.auth.models import User  # Import here instead
+
         """Saves message to database"""
         chat = Chat.objects.get(id=chat_id)
         author = User.objects.get(username=username)
@@ -118,6 +119,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_avatar_url(self, username):
+        from django.contrib.auth.models import User  # Import here instead
+
         try:
             user = User.objects.select_related('profile').get(username=username)
             if user.profile:
@@ -129,6 +132,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_profile(self, username):
+        from django.contrib.auth.models import User  # Import here instead
+
         """Returns user's profile"""
         profile = User.objects.get(username=username).profile
         return profile

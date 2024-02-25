@@ -42,13 +42,11 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-    "0.0.0.0",
-    "localhost"
-]
+INTERNAL_IPS = ["127.0.0.1", "0.0.0.0", "localhost"]
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*",
+                '136e-185-154-12-64.ngrok-free.app'
+]
 
 
 # Application definition
@@ -60,9 +58,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.sites",
-    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "channels",
+    "whitenoise.runserver_nostatic",
     "django.contrib.humanize",
     "django_extensions",
     "allauth",
