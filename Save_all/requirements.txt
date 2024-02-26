@@ -62,15 +62,6 @@ json5==0.9.17
 jsonpointer==2.4
 jsonschema==4.21.1
 jsonschema-specifications==2023.12.1
-jupyter-events==0.9.0
-jupyter-lsp==2.2.2
-jupyter_client==8.6.0
-jupyter_core==5.7.1
-jupyter_server==2.12.5
-jupyter_server_terminals==0.5.2
-jupyterlab==4.1.2
-jupyterlab_pygments==0.3.0
-jupyterlab_server==2.25.3
 Markdown==3.5.2
 MarkupSafe==2.1.5
 matplotlib-inline==0.1.6
@@ -86,8 +77,6 @@ nbclient==0.9.0
 nbconvert==7.16.1
 nbformat==5.9.2
 nest-asyncio==1.6.0
-notebook==7.1.0
-notebook_shim==0.2.4
 oauthlib==3.2.2
 overrides==7.7.0
 packaging==23.2
@@ -157,4 +146,3 @@ webcolors==1.13
 webencodings==0.5.1
 websocket-client==1.7.0
 whitenoise==6.6.0
-zope.interface==6.2
