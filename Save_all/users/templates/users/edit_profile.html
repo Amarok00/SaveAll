@@ -1,0 +1,135 @@
+{% extends "users/base.html" %}
+{% load static %}
+
+{% block title %} Edit profile {% endblock %}
+{% block content %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+<div class="container">
+    <div class="profile-info">
+        <div class="avatar-container edit-page">
+            {% if user.profile.image %}
+        <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% endif %}" alt="avatar"
+            style="width: 210px; height: 300px;">
+
+            {% endif %}
+        </div>
+    </div>
+    <div class="profile-bio profile-bio-edit">
+        <form method="post" enctype="multipart/form-data" class="edit-bio" id="combined-form">
+            <h2 class="profile-bio-edit-title">Edit personal data</h2>
+            {% csrf_token %}
+
+            <!-- Fields from profile_form -->
+            {{ profile_form }}
+
+            <!-- Image upload fields -->
+            <input type="file" name="image" accept="image/*" id="id_image" class="edit-image-btn">
+            <label for="id_image" class="edit-image-label">
+                <img id="image-preview" src="{% if user.profile.image %}{{ user.profile.image.url }}{% endif %}"
+                    alt="avatar" width="50" height="50">
+            </label>
+
+            <!-- Save changes button for the combined form -->
+            <button class="btn-success my-1" id="save-combined-btn">Save Changes</button>
+        </form>
+    </div>
+    <br><br><br>
+    <div class="container">
+        <h5 class="text-danger">Delete account</h5>
+        <p>Are you sure you want to permanently delete your account?</p>
+        <p>This action is irreversible!!!</p>
+        <div class="d-flex mx-1">
+            <form method="post" action="{% url 'delete-user' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger mx-1">Yes, delete</button>
+            </form>
+            <button class="btn "><a class="btn" href="/profile">No, cancel</a></button>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            // Initialize datepicker
+            $('#id_birth_date').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'yy-mm-dd',
+                yearRange: '-100:-12',
+            });
+
+            // Save bio button click event
+            $('#save-combined-btn').on('click', function (e) {
+                e.preventDefault();
+
+                let form = $('#combined-form')[0];
+                let data = new FormData(form);
+
+                // Perform AJAX request
+                $.ajax({
+                    url: "{% url 'edit_profile' %}",
+                    type: 'POST',
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        // Enable form elements
+                        $('#combined-form input, #combined-form button').prop('disabled', false);
+
+                        // Optionally show a success message
+                        // ...
+
+                        console.log("Image successfully uploaded and form submitted.");
+                        console.log("Server response:", response);
+                    },
+                    error: function (error) {
+                        // Enable form elements
+                        $('#combined-form input, #combined-form button').prop('disabled', false);
+
+                        // Optionally show an error message
+                        // ...
+
+                        console.error("Error uploading image or submitting form:", error);
+                    },
+                    complete: function (xhr, status) {
+                        console.log("Request completed with status:", status);
+                        console.log("Data being sent:", data);
+                    }
+                })
+            });
+            // Toggle delete profile dropdown
+            $('.delete-profile-button').on('click', (e) => {
+                $('.delete-profile-dropdown').toggleClass('hidden');
+                $('html, body').animate({
+                    scrollTop: $(document).height()
+                }, 'slow');
+            });
+
+            // Close delete profile dropdown
+            $('.delete-cancel').on('click', (e) => {
+                $('.delete-profile-dropdown').addClass('hidden');
+            });
+
+            // Function to handle the image change event
+            $('#id_image').change(function () {
+                readURL(this); // Display the selected image in the preview
+            });
+
+            // Function to display the selected image in the preview
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Append a timestamp or a random parameter to the image URL to bust the cache
+                        var timestamp = new Date().getTime();
+                        $('#image-preview').attr('src', e.target.result + '?' + timestamp);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        });
+    </script>
+
+    {% endblock %}

@@ -5,7 +5,8 @@
 `pip install django`
 [django](https://www.djangoproject.com) = "^4.2.4"
 
-`pip install django-crispy-forms`
+`pip install django-crispy-forms`y
+
 [django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/install.html) = "^2.0"
 
 `pip install django-cleanup`

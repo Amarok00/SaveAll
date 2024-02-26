@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.text import slugify
+from pytils.translit import slugify
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from users.models import Profile
 
 
 class Post(models.Model):
@@ -36,10 +37,12 @@ class Post(models.Model):
         blank=True,
         verbose_name="Saved user posts",
     )
+    image = models.ImageField(upload_to='Save_all/media/profiles_img/', default='Save_all/other_static/bootstrap5/assets/img/pixlr-bg.png')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts',null=True)
 
-    # def save(self, *args, **kwargs):
-    #     self.slug = slugify(self.title)
-    #     super(Post, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Post, self).save(*args, **kwargs)
 
     def total_likes_post(self):
         return self.likes_post.count()
@@ -54,6 +57,23 @@ class Post(models.Model):
         return self.title
 
 
-@receiver(pre_save, sender=Post)
-def prepopulated_slug(sender, instance, **kwargs):
-    instance.slug = slugify(instance.title)
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, related_name='comments_blog', on_delete=models.CASCADE)
+    name_author = models.ForeignKey(User,on_delete=models.CASCADE)
+    body = models.TextField(max_length=255)
+    data_create = models.DateTimeField(auto_now_add=True)
+    likes_comments = models.ManyToManyField(User,related_name="likes_blog_comment",blank = True)
+    reply_comment = models.ForeignKey('self',null=True,related_name='replies_comment',on_delete=models.CASCADE)
+    
+
+    def total_likes_comment(self):
+        return self.likes_comments.count()
+    
+    def __str__(self):
+        return "%s - %s - %s" % (self.post.title, self.name_author, self.id)
+
+
+    def get_absolute_url(self):
+        return reverse("post-detail", kwargs={"slug": self.slug, "pk": self.pk})
+    

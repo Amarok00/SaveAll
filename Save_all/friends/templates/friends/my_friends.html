@@ -1,0 +1,430 @@
+{% extends "friends/base.html" %}
+{% load static %}
+
+{% block title %} My friends {% endblock %}
+{% block content %}
+<div class="container ">
+    <div class="row">
+        <!-- Первый контейнер для списка друзей -->
+        <div class="col-md-6">
+            <h1>Мои друзья </h1>
+            <div class="friends-container-main">
+                <div class="friends-container ">
+                    <div id="friends" class="profiles-list align-self-start">
+                        {% if friends %}
+                        {% for friend in friends %}
+                        <div class="profile-list-card mt-3">
+                            <!-- Ваш код для списка друзей -->
+                            <div class="profile-list-avatar">
+                                <div class="d-flex">
+                                    <img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="70" height="70"
+                                        src="{{ friend.profile.image.url }}" alt="avatar">
+                                </div>
+                            </div>
+                            <div class="profile-list-name">
+                                <strong>
+                                    {{ friend }}
+                                    {% if friend.online %}
+                                    <span class="online-circle">Online</span>
+                                    {% else %}
+                                    <span class="offline-circle">Offline</span>
+                                    {% endif %}
+                                </strong>
+                            </div>
+                            <div>
+                                <a href="{% url 'user_profile' friend.username %}"
+                                    class="btn btn-primary rounded-circle flex-shrink-0 me-3 fit-cover"
+                                    style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                                <a href="/my_messages/chat-with-{{ friend.username }}/"
+                                    class="btn btn-info rounded-circle flex-shrink-0 me-3 fit-cover">
+                                    <i class="fas fa-paper-plane " style="width: 50px; height: 50px;"></i>
+                                </a>
+
+                                <button class="btn btn-warning rounded-circle flex-shrink-0 me-3 fit-cover"
+                                    onclick="removeFriend('{{ friend.id }}')">
+                                    <i class="fas fa-trash-alt" style="width: 50px; height: 50px;"></i>
+                                </button>
+
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="no-friends">
+                            <h2>У вас еще нет друзей </h2>
+                            <p>Восльзуйтесь поиском для поиска друзей  <a href="#">Страница поиска</a>.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Второй контейнер для входящих запросов -->
+        <div class="col-md-6 ">
+            <div id="friend-requests" class="profiles-list align-self-start">
+                {% if pending_requests %}
+                <h2>Входящие запросы </h2>
+                <h8>Передите на профиль человека для добовления в друзья</h8><br /><br />
+                {% for request in pending_requests %}
+                <div class="profile-list-card">
+                    <!-- Ваш код для входящих запросов -->
+                    <div class="profile-list-avatar">
+                        <div class="d-flex">
+                            <img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50"
+                                src="{{ request.from_profile.image.url }}" alt="avatar">
+                        </div>
+                    </div>
+                    <div class="profile-list-name">
+                        <strong>
+                            <span class="request-status">Friend Request</span>
+                            <br>
+                            {{ request.from_profile }} <br>
+                            <a href="{% url 'user_profile' request.from_profile.user %}" class="btn btn-info">View
+                                Profile</a>
+                        </strong>
+                    </div>
+                    <div>
+                        <!-- Дополнительные элементы для входящих запросов -->
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function removeFriend(profileId) {
+        const csrftoken = getCookie('csrftoken');
+
+        $.ajax({
+            url: '/friends/remove-friend/',
+            type: 'POST',
+            data: { 'profile_id': profileId },
+            headers: { 'X-CSRFToken': csrftoken, 'X-Requested-With': 'XMLHttpRequest' },
+            dataType: 'json',
+            success: function (response) {
+                if (response.status === 'ok') {
+                    // Обновление интерфейса после успешного удаления друга
+                    console.log('Friend removed successfully');
+
+                    // Найти элемент друга в списке и удалить его
+                    $(`.friend-item[data-profile-id="${profileId}"]`).remove();
+                } else {
+                    console.error('Error removing friend: ' + response.message);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.error('Error removing friend: ' + errorThrown);
+            }
+        });
+    }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Check if the cookie name matches the expected format
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+<script>
+    const sendFriendRequestUrl =
+        protocol + "//" + host + "/friends/send-friend-request/";
+    const acceptFriendRequestUrl =
+        protocol + "//" + host + "/friends/accept-friend-request/";
+    const declineFriendRequestUrl =
+        protocol + "//" + host + "/friends/decline-friend-request/";
+    const removeFriendUrl = protocol + "//" + host + "/friends/remove-friend/";
+    const cancelFriendRequestUrl =
+        protocol + "//" + host + "/friends/cancel-friend-request/";
+
+    const sendFriendRequest = (e) => {
+        e.preventDefault();
+        let profileId = $(e.target).data("profile-id");
+        // make e.target disabled
+        $(e.target).attr("disabled", true);
+        // show loading icon
+        $(e.target).append('<i class="fas fa-spinner fa-spin"></i>');
+        $.ajax({
+            url: sendFriendRequestUrl,
+            type: "POST",
+            data: {
+                profile_id: profileId,
+                csrfmiddlewaretoken: csrfToken,
+            },
+            success: (data) => {
+                // remove loading icon
+                $(e.target).find("i").remove();
+                // change button text to 'Request pending'
+                $(e.target).text("Request pending");
+                // remove event handler from the button
+                $(e.target).off("click");
+                // add .cancel-friend-button next to the button
+                let cancelFriendButton = $(
+                    '<button class="cancel-friend-button" data-profile-id="' +
+                    profileId +
+                    '">Cancel</button>'
+                );
+                $(e.target).after(cancelFriendButton);
+                // add event handler to the cancel button
+                $(cancelFriendButton).on("click", cancelFriendRequest);
+            },
+            error: (data) => {
+                console.log(data);
+                // remove loading icon
+                $(e.target).find("i").remove();
+                // enable e.target
+                $(e.target).attr("disabled", false);
+            },
+        });
+    };
+
+    const cancelFriendRequest = (e) => {
+        e.preventDefault();
+        let profileId = $(e.target).data("profile-id");
+        // make e.target disabled
+        $(e.target).attr("disabled", true);
+        // show loading icon
+        $(e.target).append('<i class="fas fa-spinner fa-spin"></i>');
+        $.ajax({
+            url: cancelFriendRequestUrl,
+            type: "POST",
+            data: {
+                profile_id: profileId,
+                csrfmiddlewaretoken: csrfToken,
+            },
+            success: (data) => {
+                // remove cancel button
+                $(e.target).remove();
+                // change .send-friend-button next to the button to 'Add to friends'
+                $('.send-friend-button[data-profile-id="' + profileId + '"]').text(
+                    "Add to friends"
+                );
+                // make it enabled again
+                $('.send-friend-button[data-profile-id="' + profileId + '"]').attr(
+                    "disabled",
+                    false
+                );
+                // add event handler to the button
+                $('.send-friend-button[data-profile-id="' + profileId + '"]').on(
+                    "click",
+                    sendFriendRequest
+                );
+            },
+            error: (data) => {
+                console.log(data);
+                // remove loading icon
+                $(e.target).find("i").remove();
+                // enable e.target
+                $(e.target).attr("disabled", false);
+            },
+        });
+    };
+
+    const acceptFriendRequest = (e) => {
+        e.preventDefault();
+        let profileId = $(e.target).data("profile-id");
+        // make e.target disabled
+        $(e.target).attr("disabled", true);
+        // make decline button disabled
+        $('.decline-friend-button[data-profile-id="' + profileId + '"]').attr(
+            "disabled",
+            true
+        );
+        // show loading icon
+        $(e.target).append('<i class="fas fa-spinner fa-spin"></i>');
+        $.ajax({
+            url: acceptFriendRequestUrl,
+            type: "POST",
+            data: {
+                profile_id: profileId,
+                csrfmiddlewaretoken: csrfToken,
+            },
+            success: (data) => {
+                // replace accept and decline buttons with .chat-button link and .unfriend-button
+                let username = $('input[id="profile_username"]').val();
+                let chatUrl =
+                    protocol + "//" + host + "/my_messages/chat-with-" + username + "/";
+                let chatButton = $(
+                    '<a class="chat-button" href="' + chatUrl + '">Chat</a>'
+                );
+                let unfriendButton = $(
+                    '<button class="unfriend-button" data-profile-id="' +
+                    profileId +
+                    '">Unfriend</button>'
+                );
+                $(e.target).replaceWith(chatButton);
+                $(
+                    '.decline-friend-button[data-profile-id="' + profileId + '"]'
+                ).replaceWith(unfriendButton);
+                // add event handler to the unfriend button
+                $(unfriendButton).on("click", unfriend);
+                // prepend post form to .profile-wall
+                $(".profile-wall").prepend(postFormHtml);
+                // add event handlers to the post form
+                $(".post-form").on("submit", createPost);
+                $("#id_image").on("change", imagePreview);
+                // if there's .no-posts div change it p inner text to '<p>You can post something to make  ${user_profile}  notice you</p>'
+                if ($(".no-posts").length) {
+                    let name = $(".profile-name")
+                        .text()
+                        .replace(/\n/g, "")
+                        .replace(/Name:/, "")
+                        .trim();
+                    let text =
+                        "<p>You can post something to make " + name + " notice you</p>";
+                    $(".no-posts").html(text);
+                }
+                // for each post in the wall add a comment form html
+                $(".post").each(function () {
+                    let postId = $(this).data("post-id");
+                    let commentForm =
+                        `<form class="comment-form" data-post-id="${postId}">` +
+                        commentFormHtml +
+                        `</form>`;
+                    // append the comment form to the .comments-container that follows the post
+                    $('.comments-container[data-for-post="' + postId + '"]').append(
+                        commentForm
+                    );
+                });
+                $(".comment-form").on("submit", createComment);
+            },
+            error: (data) => {
+                console.log(data);
+                // remove loading icon
+                $(e.target).find("i").remove();
+                // enable e.target
+                $(e.target).attr("disabled", false);
+                // enable decline button
+                $('.decline-friend-button[data-profile-id="' + profileId + '"]').attr(
+                    "disabled",
+                    false
+                );
+            },
+        });
+    };
+
+    const declineFriendRequest = (e) => {
+        e.preventDefault();
+        let profileId = $(e.target).data("profile-id");
+        // make e.target disabled
+        $(e.target).attr("disabled", true);
+        // make accept button disabled
+        $('.accept-friend-button[data-profile-id="' + profileId + '"]').attr(
+            "disabled",
+            true
+        );
+        // show loading icon
+        $(e.target).append('<i class="fas fa-spinner fa-spin"></i>');
+        $.ajax({
+            url: declineFriendRequestUrl,
+            type: "POST",
+            data: {
+                profile_id: profileId,
+                csrfmiddlewaretoken: csrfToken,
+            },
+            success: (data) => {
+                // replace accept and decline buttons with .send-friend-button
+                let sendFriendButton = $(
+                    '<button class="send-friend-button" data-profile-id="' +
+                    profileId +
+                    '">Add to friends</button>'
+                );
+                $(e.target).replaceWith(sendFriendButton);
+                $(
+                    '.accept-friend-button[data-profile-id="' + profileId + '"]'
+                ).remove();
+                // add event handler to the send friend button
+                $(sendFriendButton).on("click", sendFriendRequest);
+            },
+            error: (data) => {
+                console.log(data);
+                // remove loading icon
+                $(e.target).find("i").remove();
+                // enable e.target
+                $(e.target).attr("disabled", false);
+                // enable accept button
+                $('.accept-friend-button[data-profile-id="' + profileId + '"]').attr(
+                    "disabled",
+                    false
+                );
+            },
+        });
+    };
+
+    const unfriend = (e) => {
+        e.preventDefault();
+        let profileId = $(e.target).data("profile-id");
+        // make e.target disabled
+        $(e.target).attr("disabled", true);
+        // make .chat-button link disabled
+        let chatHrefBackup = $(".chat-button").attr("href");
+        $(".chat-button").attr("href", "javascript:void(0);");
+        // show loading icon
+        $(e.target).append('<i class="fas fa-spinner fa-spin"></i>');
+        // make all .post-form and .comment-form inputs, buttons, and textareas disabled
+        $(".post-form").find("input, button, textarea").attr("disabled", true);
+        $(".comment-form").find("input, button, textarea").attr("disabled", true);
+        $.ajax({
+            url: removeFriendUrl,
+            type: "POST",
+            data: {
+                profile_id: profileId,
+                csrfmiddlewaretoken: csrfToken,
+            },
+            success: (data) => {
+                // remove unfriend button
+                $(e.target).remove();
+                // replace .chat-button link with .send-friend-button
+                let sendFriendButton = $(
+                    '<button class="send-friend-button" data-profile-id="' +
+                    profileId +
+                    '">Add to friends</button>'
+                );
+                $(".chat-button").replaceWith(sendFriendButton);
+                // add event handler to the send friend button
+                $(sendFriendButton).on("click", sendFriendRequest);
+                // remove all .post-form and .comment-form inputs, buttons, and textareas
+                $(".post-form").remove();
+                $(".comment-form").remove();
+                if ($(".no-posts").length) {
+                    let text =
+                        "<p>You need to add this person to friends to start posting here</p>";
+                    $(".no-posts").html(text);
+                }
+            },
+            error: (data) => {
+                console.log(data);
+                // remove loading icon
+                $(e.target).find("i").remove();
+                // enable e.target
+                $(e.target).attr("disabled", false);
+                // enable .chat-button link
+                $(".chat-button").attr("href", chatHrefBackup);
+                // enable all .post-form and .comment-form inputs, buttons, and textareas
+                $(".post-form").find("input, button, textarea").attr("disabled", false);
+                $(".comment-form")
+                    .find("input, button, textarea")
+                    .attr("disabled", false);
+            },
+        });
+    };
+
+    $(".send-friend-button").on("click", sendFriendRequest);
+    $(".cancel-friend-button").on("click", cancelFriendRequest);
+    $(".accept-friend-button").on("click", acceptFriendRequest);
+    $(".decline-friend-button").on("click", declineFriendRequest);
+    $(".unfriend-button").on("click", unfriend);
+
+</script>
+{% endblock %}

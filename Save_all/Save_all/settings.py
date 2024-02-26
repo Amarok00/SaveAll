@@ -16,11 +16,15 @@ from pathlib import Path
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 # Loading ENV
-env_path = Path('Save_all/') / '.env'
+env_path = Path("Save_all/") / ".env"
 
 
-#env_path = '.test.env'
+# env_path = '.test.env'
 load_dotenv(dotenv_path=env_path)
 
 
@@ -33,17 +37,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = "django-insecure-kmi==l(7vl8665z#odm381&r-)bd#f(xu5ca4!pm&^!g&-)a)d"
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+INTERNAL_IPS = ["127.0.0.1", "0.0.0.0", "localhost"]
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = ["*", "6222-46-242-11-188.ngrok-free.app"]
+CSRF_TRUSTED_ORIGINS = ["https://6222-46-242-11-188.ngrok-free.app"]
 
 # Application definition
 
@@ -53,23 +55,29 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    'django.contrib.sites',
+    "django.contrib.sites",
     "django.contrib.staticfiles",
-    # "channels"
-    'django.contrib.humanize',
-    'django_extensions',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.github',
+    "channels",
+    "whitenoise.runserver_nostatic",
+    "django.contrib.humanize",
+    "django_extensions",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
     "django_cleanup.apps.CleanupConfig",
     "crispy_forms",
     "crispy_bootstrap5",
     "debug_toolbar",
     "ckeditor",
     "blog.apps.BlogConfig",
-    'discussions',
+    "users.apps.UsersConfig",
+    "notifications.apps.NotificationConfig",
+    "friends.apps.FriendsConfig",
+    "chats.apps.ChatsConfig",
+    "communities.apps.CommunitiesConfig",
+    "feed.apps.FeedConfig",
 ]
 
 SITE_ID = 1
@@ -81,52 +89,71 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "middleware.middleware.AjaxMiddleware",
+    "users.middleware.ActiveUserMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
+USER_ONLINE_TIMEOUT = 300
+
+USER_LAST_SEEN_TIMEOUT = 60 * 60 * 24 * 7
 
 ROOT_URLCONF = "Save_all.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR,'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
-                "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
             ],
         },
     },
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
         ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
     },
-    'github': {
-        'SCOPE': [
-            'user',
-            'repo',
-            'read:org',
+    "github": {
+        "SCOPE": [
+            "user",
+            "repo",
+            "read:org",
         ],
-    }
+    },
 }
 
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_CONFIRMATION_HMAC = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = False
+ACCOUNT_USERNAME_MIN_LENGTH = 4
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 WSGI_APPLICATION = "Save_all.wsgi.application"
 
@@ -140,7 +167,8 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
+# db_from_env = dj_database_url.config()
+# DATABASES["default"].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -178,10 +206,13 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,"other_static"),
+    os.path.join(BASE_DIR, "other_static"),
 ]
 
 MEDIA_URL = "/media/"
@@ -203,37 +234,84 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "index-home"
+
 CKEDITOR_CONFIGS = {
-    'default':{
-        'width':'auto',
+    "default": {
+        "width": "auto",
     }
 }
 
 
-# ASGI_APPLICATION = "Save_all.routing.application"
+ASGI_APPLICATION = "Save_all.routing.application"
+ASGI_THREADS = 100
 
-# CHANNEL_LAYERS = {
-#     "default":{
-#         "BACKEND":"channels.layers.InMemoryChannelLayer"
-#     },
-# }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = os.getenv("EMAIL_PORT")
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_USER')     
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS') 
+CHANNEL_LAYERS = {
+    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+}
+
+
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = os.getenv("EMAIL_PORT")
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv("EMAIL_USER")
+# EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "127.0.0.1:11211",
+    }
+}
+
+# if "DEVELOPMENT" in os.environ:
+#     print("Development environment")
+#     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         },
+#     }
+#     CHANNEL_LAYERS = {
+#         "default": {
+#             "BACKEND": "channels_redis.core.RedisChannelLayer",
+#             "CONFIG": {
+#                 "hosts": [("127.0.0.1", 6379)],
+#                 # "capacity": 200,
+#             },
+#         },
+#     }
+# else:
+#     print("Production environment")
+#     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#     EMAIL_USE_TLS = True
+#     EMAIL_PORT = 587
+#     EMAIL_HOST = "smtp.gmail.com"
+#     EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+#     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+#     DEFAULT_FROM_EMAIL = "django.social.network@example.com"
+#     DATABASES = {
+#         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+#     }
+#     CHANNEL_LAYERS = {
+#         "default": {
+#             "BACKEND": "channels_redis.core.RedisChannelLayer",
+#             "CONFIG": {
+#                 "hosts": [(os.environ.get("REDIS_URL"))],
+#             },
+#         },
+#     }
+#     django_heroku.settings(locals())
 
 GOOGLE_RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY")
 
 MESSAGE_TAGS = {
-        messages.DEBUG: 'alert-secondary',
-        messages.INFO: 'alert-info',
-        messages.SUCCESS: 'alert-success',
-        messages.WARNING: 'alert-warning',
-        messages.ERROR: 'alert-danger',
+    messages.DEBUG: "alert-secondary",
+    messages.INFO: "alert-info",
+    messages.SUCCESS: "alert-success",
+    messages.WARNING: "alert-warning",
+    messages.ERROR: "alert-danger",
 }
-
-#в продакт версии убрать
-os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"

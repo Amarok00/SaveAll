@@ -1,19 +1,52 @@
 {% extends 'blog/base.html' %}
 
 {% block title%}Post{%endblock%}
-
+{%load static %}
 {% block content_blog %}
 
 <div class="row">
     <div class="col-lg-10 col-xl-8 offset-lg-1 offset-xl-2">
         <div class="intro">
-            <h1 class="text-center" data-bss-hover-animate="pulse">&nbsp;
-                {{blog_post_detail.title}}
+            <h1 class="text-center text-danger" data-bss-hover-animate="pulse">&nbsp;
+                {{post.title}}
+                <div id="save-section" class="d-flex justify-content-end align-items-end">
+                    {% include 'blog/save_section.html'%}
+                </div>
+                <div class="col-xl-12"><img width="500" height="500" src="{{ post.image.url }}">
+                    <div class="d-flex">
+                        {% if request.user.profile.image %}
+                        <img class="rounded-circle flex-shrink-0 me-3 fit-cover"
+                            src="{{ request.user.profile.image.url }}" alt="avatar" style="width: 50px; height: 50px;">
+                        {% else %}
+                        <!-- Display default profile image -->
+                        <img src="{% static 'default_profile.jpg' %}" alt="avatar"
+                            class="rounded-circle flex-shrink-0 me-3 fit-cover" style="width: 50px; height: 50px;">
+                        {% endif %}
             </h1>
+            <p class="text-center"><span class="by">Author:</span> <a href="#">{{post.author}}</a>&nbsp;&nbsp;<span
+                    class="date">{{post.data_create|date:"F d Y"}} </span></p>
+
             <p class="text-center">
-                <span class="by">Author:</span> <a href="#">{{blog_post_detail.author}}</a>&nbsp;&nbsp;<span
-                    class="date">{{blog_post_detail.data_create|date:"F d Y"}} </span>
-                | {{blog_post_detail.content|safe }} |
+                {{post.content|safe }}
+            <div id="like-section">
+                {% include "blog/like_section.html" %}
+                {% if post.author == user %}
+            </div>
+            <br>
+            <br>
+            <div class="d-flex justify-content-end align-items-end ">
+                <a href="{% url 'post-delete' post.id %}" class="btn btn-danger mx-1">
+                    <i class="bi bi-trash fs-4 "></i>
+                    <!-- Иконка корзины из Bootstrap Icons -->
+                </a>
+
+                <a href="{% url 'post-update' post.id %}" class="btn btn-primary ">
+                    <i class="bi bi-pencil fs-4 "></i>
+                    <!-- Иконка карандаша из Bootstrap Icons -->
+                </a>
+
+            </div>
+            {% endif %}
             </p>
         </div>
         <div class="text">
@@ -23,5 +56,6 @@
         </div>
     </div>
 </div>
+<div class="main-comment-section">{% include 'blog/comments.html' %}</div>
 
 {%endblock%}

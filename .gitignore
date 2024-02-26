@@ -139,3 +139,15 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+media/*"""
+
+from django.contrib import admin
+from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
+from chats.routing import websocket_urlpatterns
+Save_all/static/*
+Save_all/tree_structure.txt
+Save_all/media/profiles_img/Снимок_экрана_от_2024-02-23_19-20-20.png
+Save_all/media/profiles_img/photo_2024-02-11_18-50-21_OgdZpmD.jpg

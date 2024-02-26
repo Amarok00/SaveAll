@@ -1,0 +1,98 @@
+.
+├── blog
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   ├── models.py
+│   ├── __pycache__
+│   ├── static
+│   ├── templates
+│   ├── tests
+│   ├── urls.py
+│   └── views.py
+├── chats
+│   ├── admin.py
+│   ├── apps.py
+│   ├── consumers.py
+│   ├── __init__.py
+│   ├── migrations
+│   ├── models.py
+│   ├── __pycache__
+│   ├── routing.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── db.sqlite3
+├── friends
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   ├── models.py
+│   ├── __pycache__
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── media
+│   ├── default_profile.jpg
+│   ├── profiles_img
+│   └── Save_all
+├── middleware
+│   ├── __init__.py
+│   ├── middleware.py
+│   └── __pycache__
+├── notification
+│   ├── admin.py
+│   ├── apps.py
+│   ├── consumers.py
+│   ├── __init__.py
+│   ├── migrations
+│   ├── models.py
+│   ├── __pycache__
+│   ├── routing.py
+│   ├── tests.py
+│   └── views.py
+├── other_static
+│   └── bootstrap5
+├── pytest.ini
+├── Save_all
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── routing.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── static
+│   ├── admin
+│   ├── blog_static
+│   ├── bootstrap5
+│   ├── ckeditor
+│   ├── debug_toolbar
+│   └── django_extensions
+├── templates
+│   ├── account
+│   ├── openid
+│   ├── socialaccount
+│   ├── templates_project
+│   └── tests
+├── tree_structure.txt
+└── users
+    ├── admin.py
+    ├── apps.py
+    ├── forms.py
+    ├── __init__.py
+    ├── middleware.py
+    ├── migrations
+    ├── models.py
+    ├── __pycache__
+    ├── signals.py
+    ├── templates
+    ├── tests.py
+    ├── urls.py
+    └── views.py
+
+47 directories, 70 files
